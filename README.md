@@ -1,6 +1,12 @@
-# Mock Data Generator
+# Mock Data Generator 🎲
 
 A powerful web application to generate realistic fake data in multiple formats for testing and development purposes.
+
+## 📸 Application Overview
+
+### Main Interface
+![Main Interface](screenshots/Main-Interface.jpg)
+*The intuitive Streamlit frontend with topic selection, format options, and real-time data generation*
 
 ## 🚀 Features
 
@@ -35,6 +41,9 @@ mock-data-generator/
 │       └── constants.py     # Constants and configurations
 ├── frontend/
 │   └── streamlit_app.py     # Streamlit frontend
+├── screenshots/             # Application screenshots
+│   ├── main-interface.png   # Main UI screenshot
+│
 ├── requirements.txt         # Python dependencies
 ├── run.py                   # Application runner
 └── README.md
@@ -64,26 +73,35 @@ mock-data-generator/
 
 ## 📋 Available Topics
 
-1. **Users** - Personal information, contact details
-2. **Products** - E-commerce product data
-3. **Orders** - Transaction and order data
-4. **Employees** - HR and employee records
-5. **Financial** - Banking and transaction data
-6. **Healthcare** - Patient and medical records
-7. **Education** - Student and course data
-8. **Real Estate** - Property listings
-9. **Social Media** - Posts and interactions
-10. **IoT Sensors** - Sensor readings and data
-11. **Logistics** - Shipping and delivery data
-12. **Banking** - Account and transaction data
+### Core Business Data
+| Topic | Description | Sample Fields |
+|-------|-------------|---------------|
+| **Users** | Personal information, contact details | name, email, phone, address |
+| **Products** | E-commerce product data | title, price, category, description |
+| **Orders** | Transaction and order data | order_id, amount, status, date |
+| **Employees** | HR and employee records | employee_id, department, salary, hire_date |
+
+### Specialized Data
+| Topic | Description | Sample Fields |
+|-------|-------------|---------------|
+| **Financial** | Banking and transaction data | account_number, balance, transaction_type |
+| **Healthcare** | Patient and medical records | patient_id, diagnosis, treatment, date |
+| **Education** | Student and course data | student_id, course, grade, semester |
+| **Real Estate** | Property listings | address, price, bedrooms, area |
+| **Social Media** | Posts and interactions | post_id, content, likes, shares |
+| **IoT Sensors** | Sensor readings and data | sensor_id, temperature, humidity, timestamp |
+| **Logistics** | Shipping and delivery data | tracking_number, status, origin, destination |
+| **Banking** | Account and transaction data | account_type, balance, interest_rate |
 
 ## 🎛️ API Endpoints
 
-- `GET /` - Health check
-- `GET /topics` - Get available topics
-- `GET /formats` - Get supported formats
-- `POST /generate` - Generate mock data
-- `POST /download` - Download generated data
+| Method | Endpoint | Description | Response |
+|--------|----------|-------------|----------|
+| `GET` | `/` | Health check | Status message |
+| `GET` | `/topics` | Get available topics | List of topics |
+| `GET` | `/formats` | Get supported formats | List of formats |
+| `POST` | `/generate` | Generate mock data | Generated data |
+| `POST` | `/download` | Download generated data | File download |
 
 ## 🔧 Usage Examples
 
@@ -110,19 +128,35 @@ payload = {
     "num_records": 50,
     "custom_fields": ["product_name", "price", "category", "in_stock"]
 }
+
+response = requests.post("http://localhost:8000/generate", json=payload)
 ```
 
-## 🤝 Contributing
+### Using cURL
+```bash
+curl -X POST "http://localhost:8000/generate" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "topic": "products",
+       "format": "JSON",
+       "num_records": 10,
+       "seed": 123
+     }'
+```
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## 🌟 Key Features
 
-## 📄 License
+### Multiple Format Support
+Export your generated data in 15 different formats to meet various integration needs - from simple CSV files to advanced formats like Parquet and HDF5.
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+### Seed-based Generation
+Ensure reproducible data generation across environments by using the same seed value. Perfect for testing scenarios where consistent data is required.
+
+### Real-time Preview
+See your generated data immediately in the web interface before deciding to download or copy it.
+
+### Custom Field Support
+Not finding the right predefined topic? Create your own custom data schema by specifying field names and let the system generate appropriate data.
 
 ## 🙏 Acknowledgments
 
