@@ -3,12 +3,13 @@ SUPPORTED_FORMATS = [
     "Avro", "Parquet", "ORC", "Protobuf", "MsgPack", 
     "HDF5", "Feather", "BSON", "TSV"
 ]
-
+            
 PREDEFINED_TOPICS = {
-    "users": {
+    "citizen": {
         "description": "User profiles with personal information",
-        "fields": ["name", "email", "age", "address", "phone", "job", "company"]
+        "fields": ["name", "email", "age", "address", "phone", "job", "company", "gender", "created_at", "education_level", "marital_status", "income_bracket", "social_Class", "social_media", "timezone", "languages", "credit_score", "dependents", "home_ownership", "nationality", "occupation", "corporation"]
     },
+    
     "products": {
         "description": "E-commerce product data",
         "fields": ["name", "price", "category", "description", "sku", "stock", "rating"]
