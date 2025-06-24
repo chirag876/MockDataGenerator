@@ -42,11 +42,7 @@ A powerful web application to generate realistic fake data in multiple formats f
    ```bash
    python run.py
    ```
-
-4. **Access the application**
-   - Frontend: http://localhost:8501
-   - API Documentation: http://localhost:8000/docs
-
+   
 ## 📋 Available Topics
 
 ### Core Business Data
