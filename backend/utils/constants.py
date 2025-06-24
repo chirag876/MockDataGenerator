@@ -1,7 +1,5 @@
 SUPPORTED_FORMATS = [
-    "JSON", "XML", "CSV", "YAML", "TOML", "INI", 
-    "Avro", "Parquet", "ORC", "Protobuf", "MsgPack", 
-    "HDF5", "Feather", "BSON", "TSV"
+    "JSON", "CSV", "TSV", "YAML","XML", "Parquet"
 ]
 
 PREDEFINED_TOPICS = {

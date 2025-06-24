@@ -1,26 +1,17 @@
 from enum import Enum
 from typing import Any, Dict, List, Optional
-
 from pydantic import BaseModel, Field
-
 
 class FormatEnum(str, Enum):
     JSON = "JSON"
-    XML = "XML"
     CSV = "CSV"
-    YAML = "YAML"
-    TOML = "TOML"
-    INI = "INI"
-    AVRO = "Avro"
-    PARQUET = "Parquet"
-    ORC = "ORC"
-    PROTOBUF = "Protobuf"
-    MSGPACK = "MsgPack"
-    HDF5 = "HDF5"
-    FEATHER = "Feather"
-    BSON = "BSON"
     TSV = "TSV"
-
+    YAML = "YAML"
+    XML = "XML"
+    PARQUET = "Parquet"
+    AVRO = "Avro"
+    PROTOBUF = "Protobuf"
+    
 class DataRequest(BaseModel):
     topic: str
     format: FormatEnum
