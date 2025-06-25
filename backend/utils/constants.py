@@ -54,7 +54,7 @@ PREDEFINED_TOPICS = {
 }
 
 # Custom topic template for user-defined topics
-CUSTOM_TOPIC_TEMPLATE = {
-    "description": "User-defined custom data",
-    "fields": ["id", "name", "value", "category", "date", "status", "description"]
-}
+# CUSTOM_TOPIC_TEMPLATE = {
+#     "description": "User-defined custom data",
+#     "fields": ["id", "name", "value", "category", "date", "status", "description"]
+# }
