@@ -135,7 +135,7 @@ body {
     color: var(--text-secondary);
     font-size: 0.875rem;
     font-weight: 500;
-    text-transform: uppercase;
+    text-transform: sentence-case;
     letter-spacing: 0.05em;
 }
 

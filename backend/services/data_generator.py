@@ -16,29 +16,29 @@ class DataGenerator:
     
     def generate_for_topic(self, topic: str, num_records: int, custom_fields: List[str] = None) -> List[Dict[str, Any]]:
         """Generate fake data based on topic"""
-        if topic == "users":
+        if topic == "Users":
             return self._generate_users(num_records)
-        elif topic == "products":
+        elif topic == "Products":
             return self._generate_products(num_records)
-        elif topic == "orders":
+        elif topic == "Orders":
             return self._generate_orders(num_records)
-        elif topic == "employees":
+        elif topic == "Employee":
             return self._generate_employees(num_records)
-        elif topic == "financial":
+        elif topic == "Finance":
             return self._generate_financial(num_records)
-        elif topic == "healthcare":
+        elif topic == "Healthcare":
             return self._generate_healthcare(num_records)
-        elif topic == "education":
+        elif topic == "Education":
             return self._generate_education(num_records)
-        elif topic == "real_estate":
+        elif topic == "Real_Estate":
             return self._generate_real_estate(num_records)
-        elif topic == "social_media":
+        elif topic == "Social_Media":
             return self._generate_social_media(num_records)
-        elif topic == "iot_sensors":
+        elif topic == "Iot_Sensors":
             return self._generate_iot_sensors(num_records)
-        elif topic == "logistics":
+        elif topic == "Logistics":
             return self._generate_logistics(num_records)
-        elif topic == "banking":
+        elif topic == "Banking":
             return self._generate_banking(num_records)
         else:
             # Custom topic generation
