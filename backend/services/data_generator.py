@@ -19,7 +19,7 @@ class DataGenerator:
         """Generate fake data based on topic"""
         if topic == "Citizen":
             return self._generate_Citizen(num_records)
-        elif topic == "products":
+        elif topic == "Products":
             return self._generate_products(num_records)
         elif topic == "Orders":
             return self._generate_orders(num_records)
