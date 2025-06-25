@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎲 Mock Data Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+
+<body>
+    <button class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">
+        <span id="theme-icon">🌙</span>
+    </button>
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <h1>🎲 Mock Data Generator</h1>
+                <p>Generate structured and realistic sample data in a variety of formats to streamline development and
+                    QA processes.</p>
+            </div>
+            <div id="error-message" class="error" style="display: none;"></div>
+            <div id="success-message" class="success" style="display: none;"></div>
+            <form id="metric-form" autocomplete="off">
+                <div class="metrics metrics-form">
+                    <!-- Topic Card -->
+                    <div class="metric-card metric-form-card">
+                        <h4>Topic</h4>
+                        <select id="topic-select" name="topic"></select>
+                        <div id="topic-description" class="form-group"></div>
+                        <div id="custom-fields" style="display: none;">
+                            <h5>🛠️ Custom Fields</h5>
+                            <textarea id="custom-fields-input"
+                                placeholder="Enter field names (one per line)"></textarea>
+                        </div>
+                    </div>
+                    <!-- Format Card -->
+                    <div class="metric-card metric-form-card">
+                        <h4>Format</h4>
+                        <select id="format-select" name="format"></select>
+                    </div>
+                    <!-- Records Card -->
+                    <div class="metric-card metric-form-card">
+                        <h4>Records</h4>
+                        <input type="range" id="num-records" min="1" max="1000" value="100" step="1">
+                        <span id="num-records-value">100</span>
+                    </div>
+                    <!-- Seed Card -->
+                    <div class="metric-card metric-form-card">
+                        <h4>Seed</h4>
+                        <input type="number" id="seed-input" min="0" max="99999" value="42">
+                        <label style="display:block; margin-top:0.5em;">
+                            <input type="checkbox" id="use-seed"> Use seed
+                        </label>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content:flex-end;">
+                    <button type="button" id="generate-btn">🚀 Generate Data</button>
+                    <button type="button" id="show-raw-btn">📋 Show Raw</button>
+                    <button type="button" id="copy-btn">📄 Copy Data</button>
+                    <button type="button" id="download-btn">⬇️ Download</button>
+                </div>
+            </form>
+            <div id="preview" class="preview" style="display: none;">
+                <h2>📊 Data Preview</h2>
+                <pre id="raw-data" style="display: none;"></pre>
+                <div id="table-container" class="table-container"></div>
+            </div>
+            <div class="footer">
+                <p>🎲 Mock Data Generator | Built with FastAPI & JavaScript</p>
+                <p>Generate realistic fake data for testing and development</p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
