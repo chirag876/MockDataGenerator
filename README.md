@@ -11,7 +11,7 @@ A powerful web application to generate realistic fake data in multiple formats f
 
 - **12 Predefined Topics**: Users, Products, Orders, Employees, Financial, Healthcare, Education, Real Estate, Social Media, IoT Sensors, Logistics, Banking
 - **Custom Topic Support**: Define your own fields and generate custom data
-- **15 Output Formats**: JSON, XML, CSV, YAML, Parquet, TSV
+- **Output Formats**: JSON, XML, CSV, YAML, Parquet, TSV
 - **Up to 1000 Records**: Generate large datasets for testing
 - **Download & Copy**: Easy data export options
 - **Reproducible Data**: Use seeds for consistent data generation
