@@ -3,8 +3,8 @@ SUPPORTED_FORMATS = [
 ]
 
 PREDEFINED_TOPICS = {
-    "Users": {
-        "description": "User profiles with personal information",
+    "Citizen": {
+        "description": "Citizen profiles with personal information",
         "fields": ["name", "email", "age", "address", "phone", "job", "company"]
     },
     "Products": {

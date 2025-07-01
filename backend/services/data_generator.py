@@ -1,11 +1,7 @@
 import random
 import uuid
-from datetime import datetime, timedelta
 from typing import Any, Dict, List
-
-import pandas as pd
 from faker import Faker
-
 
 class DataGenerator:
     def __init__(self, seed: int = None):
@@ -16,8 +12,8 @@ class DataGenerator:
     
     def generate_for_topic(self, topic: str, num_records: int, custom_fields: List[str] = None) -> List[Dict[str, Any]]:
         """Generate fake data based on topic"""
-        if topic == "Users":
-            return self._generate_users(num_records)
+        if topic == "Citizen":
+            return self._generate_citizen(num_records)
         elif topic == "Products":
             return self._generate_products(num_records)
         elif topic == "Orders":
@@ -44,17 +40,30 @@ class DataGenerator:
             # Custom topic generation
             return self._generate_custom(num_records, custom_fields or [])
     
-    def _generate_users(self, num_records: int) -> List[Dict[str, Any]]:
+    def _generate_citizen(self, num_records: int) -> List[Dict[str, Any]]:
+        # field_data = self._load_field_data(assets_File_path)
+        marital_statuses = ["Single", "Married", "Divorced", "Widowed"]
+        genders = ["Male", "Female", "Other"]
+        religions = ["Hindu", "Muslim", "Christian", "Sikh", "Jain", "Buddhist", "Other"]
+        nationalities = ["Indian", "American", "British", "Canadian", "Australian", "Other"]
         return [
             {
-                "id": i + 1,
-                "name": self.fake.name(),
+                "citizen_id": f"CIT{str(i+1).zfill(6)}",
+                "full_name": self.fake.name(),
                 "email": self.fake.email(),
-                "age": random.randint(18, 80),
+                "age": random.randint(18, 100),
+                "gender": random.choice(genders),
+                "marital_status": random.choice(marital_statuses),
+                "religion": random.choice(religions),
+                "nationality": random.choice(nationalities),
                 "address": self.fake.address().replace('\n', ', '),
-                "phone": self.fake.phone_number(),
-                "job": self.fake.job(),
-                "company": self.fake.company(),
+                "phone_number": self.fake.phone_number(),
+                "occupation": self.fake.job(),
+                "employer": self.fake.company(),
+                "aadhaar_number": f"{random.randint(1000, 9999)} {random.randint(1000, 9999)} {random.randint(1000, 9999)}",
+                "pan_number": f"{''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=5))}{random.randint(1000, 9999)}{random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}",
+                "voter_id": f"{''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=3))}{random.randint(1000000, 9999999)}",
+                "date_of_birth": self.fake.date_of_birth(minimum_age=18, maximum_age=100).isoformat(),
                 "created_at": self.fake.date_time_between(start_date='-2y', end_date='now').isoformat()
             }
             for i in range(num_records)
@@ -62,25 +71,73 @@ class DataGenerator:
     
     def _generate_products(self, num_records: int) -> List[Dict[str, Any]]:
         categories = [
-                        "Electronics", "Clothing", "Books", "Home", "Sports", "Beauty", "Automotive", "Toys", "Grocery",
-                        "Furniture", "Jewelry", "Shoes", "Pet Supplies", "Music", "Video Games", "Health", "Office Supplies",
-                        "Garden", "Baby Products", "Tools & Hardware", "Watches", "Stationery", "Mobile Accessories", 
-                        "Luggage & Travel", "Crafts & Sewing", "Kitchen Appliances", "Smart Home Devices", "Cleaning Supplies",
-                        "Lighting", "Fitness Equipment"
-                    ]
-        return [
-            {
-                "id": i + 1,
-                "name": self.fake.catch_phrase(),
-                "price": round(random.uniform(10, 1000), 2),
-                "category": random.choice(categories),
-                "description": self.fake.text(max_nb_chars=200),
-                "sku": self.fake.uuid4()[:8].upper(),
-                "stock": random.randint(0, 500),
-                "rating": round(random.uniform(1, 5), 1)
-            }
-            for i in range(num_records)
+            "Electronics", "Clothing", "Books", "Home", "Sports", "Beauty", "Automotive", 
+            "Toys", "Grocery", "Furniture", "Jewelry", "Shoes", "Pet Supplies", "Music", 
+            "Video Games", "Health", "Office Supplies", "Garden", "Baby Products", 
+            "Tools & Hardware", "Watches", "Stationery", "Mobile Accessories", 
+            "Luggage & Travel", "Crafts & Sewing", "Kitchen Appliances", 
+            "Smart Home Devices", "Cleaning Supplies", "Lighting", "Fitness Equipment"
         ]
+        brands_by_category = {
+            "Electronics": ["Samsung", "Apple", "OnePlus", "Xiaomi", "Sony"],
+            "Clothing": ["Raymond", "Allen Solly", "FabIndia", "Levi's", "Zara"],
+            "Books": ["Penguin", "Scholastic", "Arihant", "Oxford", "Pearson"],
+            "Home": ["IKEA", "Godrej Interio", "Pepperfry", "Urban Ladder", "Nilkamal"],
+            "Grocery": ["Amul", "Patanjali", "Haldiram's", "Bikanervala", "Nestle"],
+            "Kitchen Appliances": ["Prestige", "Philips", "Bajaj", "Havells", "Morphy Richards"],
+            "default": ["Generic", "Local", "BrandX", "BrandY", "BrandZ"]
+        }
+        materials = ["Plastic", "Metal", "Wood", "Fabric", "Glass", "Leather", "Ceramic"]
+        availability_status = ["In Stock", "Out of Stock", "Pre-Order", "Limited Stock"]
+        
+        def generate_product_name(category: str) -> str:
+            if category == "Electronics":
+                return f"{random.choice(brands_by_category[category])} {random.choice(['Smartphone', 'TV', 'Laptop', 'Tablet', 'Headphones'])} {random.choice(['Pro', 'Plus', 'Ultra', 'Lite', ''])}"
+            elif category == "Clothing":
+                return f"{random.choice(brands_by_category[category])} {random.choice(['T-Shirt', 'Kurta', 'Jeans', 'Saree', 'Jacket'])} {random.choice(['Casual', 'Formal', 'Traditional', ''])}"
+            elif category == "Grocery":
+                return f"{random.choice(brands_by_category[category])} {random.choice(['Butter', 'Paneer', 'Spices', 'Rice', 'Lentils'])} {random.randint(100, 1000)}g"
+            elif category == "Kitchen Appliances":
+                return f"{random.choice(brands_by_category[category])} {random.choice(['Mixer Grinder', 'Microwave', 'Toaster', 'Electric Kettle', 'Induction Cooktop'])}"
+            else:
+                return f"{random.choice(brands_by_category.get(category, brands_by_category['default']))} {self.fake.word().capitalize()} {random.choice(['Pro', 'Classic', 'Premium', ''])}"
+
+        return [
+                (
+                    lambda: (
+                        lambda category, price_inr, discount_percentage, stock_quantity: {
+                            "product_id": f"PROD{str(i+1).zfill(2)}",
+                            "name": generate_product_name(category=category),
+                            "category": category,
+                            "brand": random.choice(brands_by_category.get(category, brands_by_category['default'])),
+                            "price_inr": price_inr,
+                            "discount_percentage": discount_percentage,
+                            "final_price_inr": round(price_inr * (1 - discount_percentage / 100), 2),
+                            "sku": f"SKU-{str(uuid.uuid4())[:8].upper()}",
+                            "stock_quantity": stock_quantity,
+                            "availability": "Out of Stock" if stock_quantity == 0 else random.choice(availability_status),
+                            "description": self.fake.text(max_nb_chars=100),
+                            "weight_kg": round(random.uniform(0.1, 50), 2),
+                            "dimensions_cm": f"{random.randint(5, 200)}x{random.randint(5, 200)}x{random.randint(5, 200)}",
+                            "material": random.choice(materials) if random.random() > 0.2 else "Plastic",
+                            "warranty_months": random.randint(6, 36) if random.random() > 0.5 else "No Warranty on this product",
+                            "rating": round(random.uniform(1, 5), 1),
+                            "reviews_count": random.randint(0, 500),
+                            "created_at": self.fake.date_time_between(start_date='-2y', end_date='now').isoformat(),
+                            "last_updated": self.fake.date_time_between(start_date='-1y', end_date='now').isoformat(),
+                            "made_in": random.choice(["India", "China", "USA", "Germany", "Japan"])
+                        }
+                    )
+                    (
+                        category := random.choice(categories),
+                        price_inr := round(random.uniform(100, 100000), 2),
+                        discount_percentage := random.randint(0, 50) if random.random() > 0.3 else 0,
+                        stock_quantity := random.randint(0, 1000)
+                    )
+                )()
+                for i in range(num_records)
+            ]
+
     
     def _generate_orders(self, num_records: int) -> List[Dict[str, Any]]:
         statuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"]
@@ -92,7 +149,7 @@ class DataGenerator:
                 "product_name": self.fake.catch_phrase(),
                 "quantity": random.randint(1, 10),
                 "unit_price": round(random.uniform(10, 500), 2),
-                "total_price": lambda: round(random.uniform(10, 5000), 2),
+                "total_price": round(random.uniform(10, 5000), 2),
                 "order_date": self.fake.date_time_between(start_date='-1y', end_date='now').isoformat(),
                 "status": random.choice(statuses)
             }
