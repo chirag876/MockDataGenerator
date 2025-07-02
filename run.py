@@ -1,8 +1,8 @@
+import socket
 import subprocess
 import sys
 import time
 import requests
-import socket
 
 class ProcessManager:
     def __init__(self):

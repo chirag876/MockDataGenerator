@@ -1,11 +1,7 @@
 import random
 import uuid
-from datetime import datetime, timedelta
 from typing import Any, Dict, List
-
-import pandas as pd
 from faker import Faker
-
 
 class DataGenerator:
     def __init__(self, seed: int = None):
@@ -16,8 +12,8 @@ class DataGenerator:
     
     def generate_for_topic(self, topic: str, num_records: int, custom_fields: List[str] = None) -> List[Dict[str, Any]]:
         """Generate fake data based on topic"""
-        if topic == "Users":
-            return self._generate_users(num_records)
+        if topic == "Citizen":
+            return self._generate_citizen(num_records)
         elif topic == "Products":
             return self._generate_products(num_records)
         elif topic == "Orders":
@@ -44,56 +40,128 @@ class DataGenerator:
             # Custom topic generation
             return self._generate_custom(num_records, custom_fields or [])
     
-    def _generate_users(self, num_records: int) -> List[Dict[str, Any]]:
+    def _generate_citizen(self, num_records: int) -> List[Dict[str, Any]]:
+        # field_data = self._load_field_data(assets_File_path)
+        marital_statuses = ["Single", "Married", "Divorced", "Widowed"]
+        genders = ["Male", "Female", "Other"]
+        religions = ["Hindu", "Muslim", "Christian", "Sikh", "Jain", "Buddhist", "Other"]
+        nationalities = ["Indian", "American", "British", "Canadian", "Australian", "Other"]
+        disablitystatus = ["None", "Visually Impaired", "Hearing Impaired", "Physically Disabled", "Mentally Challenged"]
+        bloodgroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
+        emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
+       
         return [
             {
-                "id": i + 1,
-                "name": self.fake.name(),
-                "email": self.fake.email(),
-                "age": random.randint(18, 80),
+                "citizen id": f"CIT{str(i+1).zfill(2)}",
+                "name": (name := self.fake.name()),
+                "email": f"{name.lower().replace(' ', '.').replace(',', '').replace("'", '')}@{random.choice(emaildomains)}",
+                "age": random.randint(18, 100),
+                "gender": random.choice(genders),
+                "marital status": random.choice(marital_statuses),
+                "religion": random.choice(religions),
+                "disability status": random.choice(disablitystatus),
+                "blood group": random.choice(bloodgroups),
+                "nationality": random.choice(nationalities),
                 "address": self.fake.address().replace('\n', ', '),
-                "phone": self.fake.phone_number(),
-                "job": self.fake.job(),
-                "company": self.fake.company(),
-                "created_at": self.fake.date_time_between(start_date='-2y', end_date='now').isoformat()
+                "phone number": self.fake.phone_number(),
+                "occupation": self.fake.job(),
+                "employer": self.fake.company(),
+                "aadhaar number": f"{random.randint(1000, 9999)} {random.randint(1000, 9999)} {random.randint(1000, 9999)}",
+                "pan number": f"{''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=5))}{random.randint(1000, 9999)}{random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ')}",
+                "voter id": f"{''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=3))}{random.randint(1000000, 9999999)}",
+                "date of birth": self.fake.date_of_birth(minimum_age=18, maximum_age=100).isoformat(),
             }
             for i in range(num_records)
         ]
     
     def _generate_products(self, num_records: int) -> List[Dict[str, Any]]:
         categories = [
-                        "Electronics", "Clothing", "Books", "Home", "Sports", "Beauty", "Automotive", "Toys", "Grocery",
-                        "Furniture", "Jewelry", "Shoes", "Pet Supplies", "Music", "Video Games", "Health", "Office Supplies",
-                        "Garden", "Baby Products", "Tools & Hardware", "Watches", "Stationery", "Mobile Accessories", 
-                        "Luggage & Travel", "Crafts & Sewing", "Kitchen Appliances", "Smart Home Devices", "Cleaning Supplies",
-                        "Lighting", "Fitness Equipment"
-                    ]
-        return [
-            {
-                "id": i + 1,
-                "name": self.fake.catch_phrase(),
-                "price": round(random.uniform(10, 1000), 2),
-                "category": random.choice(categories),
-                "description": self.fake.text(max_nb_chars=200),
-                "sku": self.fake.uuid4()[:8].upper(),
-                "stock": random.randint(0, 500),
-                "rating": round(random.uniform(1, 5), 1)
-            }
-            for i in range(num_records)
+            "Electronics", "Clothing", "Books", "Home", "Sports", "Beauty", "Automotive", 
+            "Toys", "Grocery", "Furniture", "Jewelry", "Shoes", "Pet Supplies", "Music", 
+            "Video Games", "Health", "Office Supplies", "Garden", "Baby Products", 
+            "Tools & Hardware", "Watches", "Stationery", "Mobile Accessories", 
+            "Luggage & Travel", "Crafts & Sewing", "Kitchen Appliances", 
+            "Smart Home Devices", "Cleaning Supplies", "Lighting", "Fitness Equipment"
         ]
+        brands_by_category = {
+            "Electronics": ["Samsung", "Apple", "OnePlus", "Xiaomi", "Sony"],
+            "Clothing": ["Raymond", "Allen Solly", "FabIndia", "Levi's", "Zara"],
+            "Books": ["Penguin", "Scholastic", "Arihant", "Oxford", "Pearson"],
+            "Home": ["IKEA", "Godrej Interio", "Pepperfry", "Urban Ladder", "Nilkamal"],
+            "Grocery": ["Amul", "Patanjali", "Haldiram's", "Bikanervala", "Nestle"],
+            "Kitchen Appliances": ["Prestige", "Philips", "Bajaj", "Havells", "Morphy Richards"],
+            "default": ["Generic", "Local", "BrandX", "BrandY", "BrandZ"]
+        }
+        materials = ["Plastic", "Metal", "Wood", "Fabric", "Glass", "Leather", "Ceramic"]
+        availability_status = ["In Stock", "Out of Stock", "Pre-Order", "Limited Stock"]
+        
+        def generate_product_name(category: str) -> str:
+            if category == "Electronics":
+                return f"{random.choice(brands_by_category[category])} {random.choice(['Smartphone', 'TV', 'Laptop', 'Tablet', 'Headphones'])} {random.choice(['Pro', 'Plus', 'Ultra', 'Lite', ''])}"
+            elif category == "Clothing":
+                return f"{random.choice(brands_by_category[category])} {random.choice(['T-Shirt', 'Kurta', 'Jeans', 'Saree', 'Jacket'])} {random.choice(['Casual', 'Formal', 'Traditional', ''])}"
+            elif category == "Grocery":
+                return f"{random.choice(brands_by_category[category])} {random.choice(['Butter', 'Paneer', 'Spices', 'Rice', 'Lentils'])} {random.randint(100, 1000)}g"
+            elif category == "Kitchen Appliances":
+                return f"{random.choice(brands_by_category[category])} {random.choice(['Mixer Grinder', 'Microwave', 'Toaster', 'Electric Kettle', 'Induction Cooktop'])}"
+            else:
+                return f"{random.choice(brands_by_category.get(category, brands_by_category['default']))} {self.fake.word().capitalize()} {random.choice(['Pro', 'Classic', 'Premium', ''])}"
+
+        return [
+                (
+                    lambda: (
+                        lambda category, price_inr, discount_percentage, stock_quantity: {
+                            "product id": f"PROD{str(i+1).zfill(2)}",
+                            "name": generate_product_name(category=category),
+                            "category": category,
+                            "brand": random.choice(brands_by_category.get(category, brands_by_category['default'])),
+                            "price inr": price_inr,
+                            "discount percentage": discount_percentage,
+                            "final price inr": round(price_inr * (1 - discount_percentage / 100), 2),
+                            "sku": f"SKU-{str(uuid.uuid4())[:8].upper()}",
+                            "stock quantity": stock_quantity,
+                            "availability": "Out of Stock" if stock_quantity == 0 else random.choice(availability_status),
+                            "description": self.fake.text(max_nb_chars=100),
+                            "weight kg": round(random.uniform(0.1, 50), 2),
+                            "dimensions cm": f"{random.randint(5, 200)}x{random.randint(5, 200)}x{random.randint(5, 200)}",
+                            "material": random.choice(materials) if random.random() > 0.2 else "Plastic",
+                            "warranty months": random.randint(6, 36) if random.random() > 0.5 else "No Warranty on this product",
+                            "rating": round(random.uniform(1, 5), 1),
+                            "reviews count": random.randint(0, 500),
+                            "made in": random.choice(["India", "China", "USA", "Germany", "Japan"])
+                        }
+                    )
+                    (
+                        category := random.choice(categories),
+                        price_inr := round(random.uniform(100, 100000), 2),
+                        discount_percentage := random.randint(0, 50) if random.random() > 0.3 else 0,
+                        stock_quantity := random.randint(0, 1000)
+                    )
+                )()
+                for i in range(num_records)
+            ]
+
     
     def _generate_orders(self, num_records: int) -> List[Dict[str, Any]]:
         statuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"]
+        emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
+        payment_methods = ["Credit Card", "Debit Card", "PayPal", "Net Banking", "Cash on Delivery", "UPI", "Wallet"]
+        orderchannels = ["Online", "In-Store", "Mobile App", "Phone Order", "Email Order"]
         return [
             {
-                "order_id": f"ORD-{str(uuid.uuid4())[:8].upper()}",
-                "customer_name": self.fake.name(),
-                "customer_email": self.fake.email(),
-                "product_name": self.fake.catch_phrase(),
-                "quantity": random.randint(1, 10),
-                "unit_price": round(random.uniform(10, 500), 2),
-                "total_price": lambda: round(random.uniform(10, 5000), 2),
-                "order_date": self.fake.date_time_between(start_date='-1y', end_date='now').isoformat(),
+                "order id": f"ORD-{str(uuid.uuid4())[:8].upper()}",
+                "customer name": (name := self.fake.name()),
+                "customer email": f"{name.lower().replace(' ', '.').replace(',', '').replace("'", '')}@{random.choice(emaildomains)}",
+                "customer phone": self.fake.phone_number(),
+                "shipping address": self.fake.address().replace('\n', ', '),
+                "payment method": random.choice(payment_methods),
+                "order Channel": random.choice(orderchannels),
+                "product name": self.fake.catch_phrase(),
+                "quantity": random.randint(1, 1000),
+                "unit price": round(random.uniform(10, 500), 2),
+                "total price": round(random.uniform(10, 5000), 2),
+                "order date": self.fake.date_time_between(start_date='-1y', end_date='now').isoformat(),
+                "delivery date": self.fake.date_time_between(start_date='now', end_date='+30d').isoformat(),
                 "status": random.choice(statuses)
             }
             for i in range(num_records)
@@ -101,20 +169,42 @@ class DataGenerator:
     
     def _generate_employees(self, num_records: int) -> List[Dict[str, Any]]:
         departments = ["IT", "HR", "Finance", "Marketing", "Operations", "Sales", "Legal"]
+        employment_types = ["Full-time", "Part-time", "Contractor", "Intern"]
+        statuses = ["Active", "Resigned", "On Leave"]
+        genders = ["Male", "Female", "Other"]
+        performance_ratings = ["Excellent", "Good", "Average", "Below Average", "Poor"]
+        emaildomains = [
+            "gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", 
+            "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com", 
+            "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"
+        ]
+        bloodgroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
+
         return [
             {
-                "employee_id": f"EMP{str(i+1).zfill(4)}",
-                "name": self.fake.name(),
-                "email": self.fake.email(),
+                "employee_id": f"EMP{str(i+1).zfill(2)}",
+                "employee_name": (name := self.fake.name()),
+                "gender": random.choice(genders),
+                "date_of_birth": self.fake.date_of_birth(minimum_age=22, maximum_age=60).isoformat(),
+                "email": f"{name.lower().replace(' ', '.').replace(',', '').replace("'", '')}@{random.choice(emaildomains)}",
+                "phone": self.fake.phone_number(),
                 "department": random.choice(departments),
+                "Projects Handled": random.randint(0, 20),
+                "employment_type": random.choice(employment_types),
+                "employee status": random.choice(statuses),
+                "hire date": self.fake.date_between(start_date='-10y', end_date='now').isoformat(),
+                "Experience (years)": random.randint(0, 20),
                 "salary": random.randint(30000, 150000),
-                "hire_date": self.fake.date_between(start_date='-10y', end_date='now').isoformat(),
-                "manager": self.fake.name(),
-                "phone": self.fake.phone_number()
+                "performance_rating": random.choice(performance_ratings),
+                "manager": (mgr_name := self.fake.name()),
+                "manager_email": f"{mgr_name.lower().replace(' ', '.').replace(',', '').replace("'", '')}@{random.choice(emaildomains)}",
+                "location": self.fake.city(),
+                "blood_group": random.choice(bloodgroups),
+                "emergency_contact": f"{self.fake.name()} - {self.fake.phone_number()}",
             }
             for i in range(num_records)
         ]
-    
+
     def _generate_financial(self, num_records: int) -> List[Dict[str, Any]]:
         transaction_types = ["Credit", "Debit", "Transfer", "Payment", "Refund"]
         currencies = ["USD", "EUR", "GBP", "INR", "JPY"]
