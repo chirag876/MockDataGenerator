@@ -5,7 +5,7 @@ A powerful web application to generate realistic fake data in multiple formats f
 ## 📸 Application Overview
 
 ### Main Interface
-![Main Interface](screenshots/Main-Interface.jpg)
+![Main Interface](screenshots/Main-Interface.png)
 
 ## 🚀 Features
 
