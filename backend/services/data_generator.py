@@ -141,7 +141,6 @@ class DataGenerator:
                 for i in range(num_records)
             ]
 
-    
     def _generate_orders(self, num_records: int) -> List[Dict[str, Any]]:
         statuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"]
         emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
@@ -340,14 +339,15 @@ class DataGenerator:
     def _generate_custom(self, num_records: int, custom_fields: List[str]) -> List[Dict[str, Any]]:
         """Generate custom data based on field names"""
         data = []
+        emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
         for i in range(num_records):
             record = {"id": i + 1}
             for field in custom_fields:
                 field_lower = field.lower()
                 if "name" in field_lower:
-                    record[field] = self.fake.name()
+                    record[field] = (name := self.fake.name())
                 elif "email" in field_lower:
-                    record[field] = self.fake.email()
+                    record[field] = f"{name.lower().replace(' ', '.').replace(',', '').replace("'", '')}@{random.choice(emaildomains)}"
                 elif "phone" in field_lower:
                     record[field] = self.fake.phone_number()
                 elif "address" in field_lower:
