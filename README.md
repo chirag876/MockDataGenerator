@@ -135,3 +135,8 @@ Not finding the right predefined topic? Create your own custom data schema by sp
 - [Faker](https://faker.readthedocs.io/) - For realistic fake data generation
 - [FastAPI](https://fastapi.tiangolo.com/) - For the robust API framework
 - [HTML, CSS, JavaScript](https://www.w3schools.com/) - For the intuitive frontend interface
+
+## License
+
+This project is licensed under the [MIT License](./LICENSE).  
+© 2025 Chirag Gupta. Please credit if reused.
