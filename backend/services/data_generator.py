@@ -20,8 +20,6 @@ class DataGenerator:
             return self._generate_orders(num_records)
         elif topic == "Employee":
             return self._generate_employees(num_records)
-        elif topic == "Finance":
-            return self._generate_financial(num_records)
         elif topic == "Healthcare":
             return self._generate_healthcare(num_records)
         elif topic == "Education":
@@ -181,56 +179,41 @@ class DataGenerator:
 
         return [
             {
-                "employee_id": f"EMP{str(i+1).zfill(2)}",
-                "employee_name": (name := self.fake.name()),
+                "employee id": f"EMP{str(i+1).zfill(2)}",
+                "employee name": (name := self.fake.name()),
                 "gender": random.choice(genders),
-                "date_of_birth": self.fake.date_of_birth(minimum_age=22, maximum_age=60).isoformat(),
+                "date of birth": self.fake.date_of_birth(minimum_age=22, maximum_age=60).isoformat(),
                 "email": f"{name.lower().replace(' ', '.').replace(',', '').replace("'", '')}@{random.choice(emaildomains)}",
                 "phone": self.fake.phone_number(),
                 "department": random.choice(departments),
                 "Projects Handled": random.randint(0, 20),
-                "employment_type": random.choice(employment_types),
+                "employment type": random.choice(employment_types),
                 "employee status": random.choice(statuses),
                 "hire date": self.fake.date_between(start_date='-10y', end_date='now').isoformat(),
                 "Experience (years)": random.randint(0, 20),
                 "salary": random.randint(30000, 150000),
-                "performance_rating": random.choice(performance_ratings),
+                "performance rating": random.choice(performance_ratings),
                 "manager": (mgr_name := self.fake.name()),
-                "manager_email": f"{mgr_name.lower().replace(' ', '.').replace(',', '').replace("'", '')}@{random.choice(emaildomains)}",
+                "manager email": f"{mgr_name.lower().replace(' ', '.').replace(',', '').replace("'", '')}@{random.choice(emaildomains)}",
                 "location": self.fake.city(),
-                "blood_group": random.choice(bloodgroups),
-                "emergency_contact": f"{self.fake.name()} - {self.fake.phone_number()}",
-            }
-            for i in range(num_records)
-        ]
-
-    def _generate_financial(self, num_records: int) -> List[Dict[str, Any]]:
-        transaction_types = ["Credit", "Debit", "Transfer", "Payment", "Refund"]
-        currencies = ["USD", "EUR", "GBP", "INR", "JPY"]
-        return [
-            {
-                "transaction_id": str(uuid.uuid4()),
-                "amount": round(random.uniform(-5000, 5000), 2),
-                "currency": random.choice(currencies),
-                "transaction_date": self.fake.date_time_between(start_date='-1y', end_date='now').isoformat(),
-                "transaction_type": random.choice(transaction_types),
-                "account_number": self.fake.bban(),
-                "description": self.fake.sentence()
+                "blood group": random.choice(bloodgroups),
+                "emergency contact": f"{self.fake.name()} - {self.fake.phone_number()}",
             }
             for i in range(num_records)
         ]
     
     def _generate_healthcare(self, num_records: int) -> List[Dict[str, Any]]:
         diagnoses = ["Hypertension", "Diabetes", "Asthma", "Migraine", "Arthritis", "Flu", "COVID-19"]
+        gender = ["Male", "Female", "Other"]
         return [
             {
-                "patient_id": f"PAT{str(i+1).zfill(6)}",
+                "patient id": f"PAT{str(i+1).zfill(2)}",
                 "name": self.fake.name(),
                 "age": random.randint(1, 100),
-                "gender": random.choice(["Male", "Female", "Other"]),
+                "gender": random.choice(gender),
                 "diagnosis": random.choice(diagnoses),
                 "doctor": f"Dr. {self.fake.name()}",
-                "visit_date": self.fake.date_between(start_date='-2y', end_date='now').isoformat(),
+                "visit date": self.fake.date_between(start_date='-2y', end_date='now').isoformat(),
                 "medication": self.fake.word().capitalize(),
                 "cost": round(random.uniform(50, 2000), 2)
             }
@@ -242,14 +225,14 @@ class DataGenerator:
         grades = ["A+", "A", "B+", "B", "C+", "C", "D", "F"]
         return [
             {
-                "student_id": f"STU{str(i+1).zfill(5)}",
+                "student id": f"STU{str(i+1).zfill(2)}",
                 "name": self.fake.name(),
                 "course": random.choice(courses),
                 "grade": random.choice(grades),
                 "semester": random.randint(1, 8),
                 "gpa": round(random.uniform(2.0, 4.0), 2),
                 "credits": random.randint(3, 6),
-                "enrollment_date": self.fake.date_between(start_date='-4y', end_date='now').isoformat()
+                "enrollment date": self.fake.date_between(start_date='-4y', end_date='now').isoformat()
             }
             for i in range(num_records)
         ]
@@ -258,14 +241,14 @@ class DataGenerator:
         property_types = ["Apartment", "House", "Condo", "Townhouse", "Villa", "Studio"]
         return [
             {
-                "property_id": f"PROP{str(i+1).zfill(6)}",
+                "property id": f"PRT{str(i+1).zfill(2)}",
                 "address": self.fake.address().replace('\n', ', '),
                 "price": random.randint(100000, 2000000),
                 "bedrooms": random.randint(1, 6),
                 "bathrooms": random.randint(1, 4),
-                "area_sqft": random.randint(500, 5000),
-                "property_type": random.choice(property_types),
-                "listing_date": self.fake.date_between(start_date='-1y', end_date='now').isoformat(),
+                "area (sqft)": random.randint(500, 5000),
+                "property type": random.choice(property_types),
+                "listing date": self.fake.date_between(start_date='-1y', end_date='now').isoformat(),
                 "agent": self.fake.name()
             }
             for i in range(num_records)
@@ -273,67 +256,117 @@ class DataGenerator:
     
     def _generate_social_media(self, num_records: int) -> List[Dict[str, Any]]:
         platforms = ["Facebook", "Twitter", "Instagram", "LinkedIn", "TikTok", "YouTube"]
+        languages = ["English", "Hindi", "Spanish", "French", "German", "Chinese", "Japanese", "Russian", "Arabic", "Portuguese"]
+        post_types = ["Text", "Image", "Video", "Link", "Poll", "Story", "Reel", "Live Stream", "Status Update", "Event"]
+
         return [
             {
                 "post_id": str(uuid.uuid4()),
+                "user_id": str(uuid.uuid4()),
                 "username": self.fake.user_name(),
-                "post_content": self.fake.text(max_nb_chars=280),
-                "likes": random.randint(0, 10000),
-                "shares": random.randint(0, 1000),
-                "comments": random.randint(0, 500),
+                "verified account": self.fake.boolean(chance_of_getting_true=20),
+                "post type": random.choice(post_types),
+                "likes": random.randint(0, 1000000),
+                "shares": random.randint(0, 100000),
+                "comments": random.randint(0, 50000),
                 "timestamp": self.fake.date_time_between(start_date='-30d', end_date='now').isoformat(),
                 "platform": random.choice(platforms),
-                "hashtags": [f"#{self.fake.word()}" for _ in range(random.randint(0, 5))]
+                "hashtags": [f"#{self.fake.word()}" for _ in range(random.randint(0, 5))],
+                "mentions": [f"@{self.fake.user_name()}" for _ in range(random.randint(0, 3))],
+                "location": self.fake.city() + ", " + self.fake.country(),
+                "language": random.choice(languages),
+                "sentiment score": round(random.uniform(-1, 1), 2)
             }
-            for i in range(num_records)
+            for _ in range(num_records)
         ]
-    
+
     def _generate_iot_sensors(self, num_records: int) -> List[Dict[str, Any]]:
-        sensor_types = ["Temperature", "Humidity", "Pressure", "Motion", "Light", "Sound"]
+        sensor_types = ["Temperature", "Humidity", "Pressure", "Motion", "Light", "Sound", "Gas", "Water Quality", "Soil Moisture", "Air Quality", "Vibration", "Proximity", "Accelerometer", "Gyroscope", "Magnetometer", "pH Level", "UV Index", "CO2 Level", "PM2.5", "PM10"]
+        statuses = ["Active", "Idle", "Faulty", "Offline", "Maintenance", "Decommissioned", "Testing", "Calibration", "Alert", "Normal", "Warning", "Critical", "Standby", "Ready", "Busy", "Disconnected"]
         return [
             {
-                "sensor_id": f"SENSOR{str(i+1).zfill(4)}",
-                "sensor_type": random.choice(sensor_types),
-                "temperature": round(random.uniform(-10, 50), 2),
-                "humidity": round(random.uniform(20, 80), 2),
-                "pressure": round(random.uniform(980, 1020), 2),
+                "reading id": str(uuid.uuid4()),
+                "sensor id": f"SR{str(i+1).zfill(2)}",
+                "sensor type": random.choice(sensor_types),
+                "temperature": f"{round(random.uniform(-10, 50), 2)}°C",
+                "humidity": f"{round(random.uniform(20, 80), 2)}%",
+                "pressure": f"{round(random.uniform(980, 1020), 2)}Hpa",
                 "timestamp": self.fake.date_time_between(start_date='-7d', end_date='now').isoformat(),
                 "location": f"{self.fake.latitude()}, {self.fake.longitude()}",
-                "battery_level": random.randint(10, 100)
+                "battery level": f"{random.randint(10, 100)}%",
+                "signal strength": random.randint(-90, -30),
+                "device status": random.choice(statuses),
+                "firmware version": f"v{random.randint(1, 3)}.{random.randint(0, 9)}.{random.randint(0, 9)}",
+                "alert triggered": random.choice([True, False]),
+                "sensor model": f"M-{random.randint(100, 999)}"
             }
             for i in range(num_records)
         ]
     
     def _generate_logistics(self, num_records: int) -> List[Dict[str, Any]]:
         statuses = ["In Transit", "Delivered", "Pending", "Out for Delivery", "Delayed"]
-        return [
-            {
-                "tracking_id": f"TRK{str(uuid.uuid4())[:10].upper()}",
+        package_types = ["Box", "Envelope", "Pallet", "Crate", "Parcel", "Freight", "Container", "Bag", "Roll", "Tube", "Cylinder", "Drum", "Carton", "Bundle", "Packet", "Satchel"]
+        priority_levels = ["Standard", "Express", "Overnight"]
+        delayed_reasons = ["Weather Delay", "Customs Hold", "Technical Issue", "High Volume"]
+        
+        records = []
+        for _ in range(num_records):
+            status = random.choice(statuses)
+            estimated_delivery = self.fake.date_between(start_date='now', end_date='+30d')
+            shipment_date = self.fake.date_between(start_date='-10d', end_date='today')
+
+            record = {
+                "tracking id": f"TRK{str(uuid.uuid4())[:10].upper()}",
                 "origin": self.fake.city(),
                 "destination": self.fake.city(),
-                "weight_kg": round(random.uniform(0.1, 50), 2),
-                "status": random.choice(statuses),
-                "estimated_delivery": self.fake.date_between(start_date='now', end_date='+30d').isoformat(),
+                "weight (kg)": round(random.uniform(0.1, 50), 2),
+                "status": status,
+                "estimated delivery": estimated_delivery.isoformat(),
+                "shipment date": shipment_date.isoformat(),
                 "carrier": self.fake.company(),
-                "cost": round(random.uniform(10, 500), 2)
+                "cost": round(random.uniform(10, 5000), 2),
+                "package type": random.choice(package_types),
+                "priority level": random.choice(priority_levels),
+                "fragile": random.choice([True, False]),
+                "receiver name": self.fake.name(),
+                "receiver contact": self.fake.phone_number(),
+                "current location": self.fake.city(),
+                "tracking url": f"https://track.mockcarrier.com/{str(uuid.uuid4())[:8].upper()}",
+                "dimensions (cm)": {
+                    "length": round(random.uniform(10, 100), 1),
+                    "width": round(random.uniform(10, 100), 1),
+                    "height": round(random.uniform(5, 50), 1),
+                },
+                "insurance amount": round(random.uniform(0, 1000), 2),
+                "delayed reason": random.choice(delayed_reasons) if status == "Delayed" else None
             }
-            for i in range(num_records)
-        ]
-    
+            records.append(record)
+        
+        return records
+
     def _generate_banking(self, num_records: int) -> List[Dict[str, Any]]:
         transaction_types = ["Deposit", "Withdrawal", "Transfer", "Payment", "Interest"]
+        transaction_statuses = ["Success", "Failed", "Pending", "Reversed", "Partially settled", "Cancelled", "Refunded", "Settled", "Disputed", "Charged Off"]
+        channels = ["ATM", "Online Banking", "Mobile App", "UPI", "POS"]
+        currencies = ["INR", "USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", "RUB", "ZAR", "BRL", "INR", "HKD", "SGD", "KRW", "MXN", "NZD", "SEK", "NOK", "DKK"]
+
         return [
             {
-                "account_number": self.fake.bban(),
-                "transaction_id": str(uuid.uuid4()),
-                "transaction_type": random.choice(transaction_types),
+                "account number": self.fake.bban(),
+                "account type": random.choice(["Savings", "Current"]),
+                "ifsc code": self.fake.bothify(text="????0#####"),
+                "transaction id": str(uuid.uuid4()),
+                "transaction type": random.choice(transaction_types),
+                "transaction status": random.choice(transaction_statuses),
                 "amount": round(random.uniform(-10000, 10000), 2),
                 "balance": round(random.uniform(0, 100000), 2),
+                "currency": random.choice(currencies),
                 "branch": self.fake.city(),
+                "channel": random.choice(channels),
                 "timestamp": self.fake.date_time_between(start_date='-1y', end_date='now').isoformat(),
-                "description": self.fake.sentence()
+                "merchant name": self.fake.company(),
             }
-            for i in range(num_records)
+            for _ in range(num_records)
         ]
     
     def _generate_custom(self, num_records: int, custom_fields: List[str]) -> List[Dict[str, Any]]:

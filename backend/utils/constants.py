@@ -19,10 +19,7 @@ PREDEFINED_TOPICS = {
         "description": "Employee records",
         "fields": ["name", "employee_id", "department", "salary", "hire_date", "email"]
     },
-    "Finance": {
-        "description": "Financial transactions",
-        "fields": ["transaction_id", "amount", "currency", "date", "type", "account"]
-    },
+
     "Healthcare": {
         "description": "Patient and medical records",
         "fields": ["patient_id", "name", "age", "diagnosis", "doctor", "date", "medication"]

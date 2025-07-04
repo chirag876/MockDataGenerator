@@ -239,10 +239,6 @@ async function init() {
             if (topicInfo) {
                 descDiv.innerHTML = `
                     <p><strong>Description:</strong> ${topicInfo.description}</p>
-                    <details>
-                        <summary>Available Fields</summary>
-                        <ul>${topicInfo.fields.map(f => `<li>${f}</li>`).join('')}</ul>
-                    </details>
                 `;
             }
         }
