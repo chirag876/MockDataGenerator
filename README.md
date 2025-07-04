@@ -48,7 +48,7 @@ A powerful web application to generate realistic fake data in multiple formats f
 ### Core Business Data
 | Topic | Description | Sample Fields |
 |-------|-------------|---------------|
-| **Users** | Personal information, contact details | name, email, phone, address |
+| **Citizen** | Personal information, contact details | name, email, phone, address |
 | **Products** | E-commerce product data | title, price, category, description |
 | **Orders** | Transaction and order data | order_id, amount, status, date |
 | **Employees** | HR and employee records | employee_id, department, salary, hire_date |
