@@ -241,15 +241,27 @@ class DataGenerator:
         ]
     
     def _generate_real_estate(self, num_records: int) -> List[Dict[str, Any]]:
-        property_types = ["Apartment", "House", "Condo", "Townhouse", "Villa", "Studio"]
+        property_types = ["Apartment", "House", "Condo", "Townhouse", "Villa", "Studio", "Farmhouse", "Penthouse", "Duplex", "Bungalow"]
+        amenities = ["Swimming Pool", "Gymnasium", "Garden", "Turf", "Security", "Play Area", "Clubhouse", None]
+        floors = ["Ground", "1st", "Upper Ground", "2nd", "Third", "4Th", "5Th", "6Th", "7Th", "8Th", "9Th", "10Th", "11Th", "12Th", "13Th", "14Th", "15Th", "16Th", "17Th", "18Th", "19Th", "20Th"]
         return [
             {
                 "property id": f"PRT{str(i+1).zfill(2)}",
                 "address": self.fake.address().replace('\n', ', '),
-                "price": random.randint(100000, 2000000),
+                "city": self.fake.city(),
+                "state": self.fake.state(),
+                "price": f"Rs{(random.randint(100000, 2000000))}",
                 "bedrooms": random.randint(1, 6),
+                "amenities": random.choice(amenities),
+                "Balconies": random.randint(0, 3),
                 "bathrooms": random.randint(1, 4),
+                "Dining Area": random.choice([True, False]),
+                "furnished": random.choice([True, False]),
+                "facing": random.choice(["North", "South", "East", "West"]),
+                "floor number": random.choice(floors),
+                "total floors": random.randint(1, 20),
                 "area (sqft)": random.randint(500, 5000),
+                "Parking Spaces": random.randint(0, 5),
                 "property type": random.choice(property_types),
                 "listing date": self.fake.date_between(start_date='-1y', end_date='now').isoformat(),
                 "agent": self.fake.name()
