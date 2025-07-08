@@ -1,5 +1,5 @@
 SUPPORTED_FORMATS = [
-    "JSON", "CSV", "TSV", "YAML","XML", "Parquet"
+    "JSON", "CSV", "TSV", "YAML", "XML", "Parquet"
 ]
 
 PREDEFINED_TOPICS = {
@@ -47,6 +47,16 @@ PREDEFINED_TOPICS = {
     "Banking": {
         "description": "Banking transactions",
         "fields": ["account_number", "transaction_type", "amount", "balance", "branch", "timestamp"]
+    },
+    "Pilot_Log_Book": {
+        "description": "Pilot flight log book data",
+        "fields": [
+            "flight id", "pilot name", "pilot license number", "pilot role", "aircraft type",
+            "departure airport", "arrival airport", "flight date", "departure time",
+            "arrival time", "flight time hours", "flight number", "passenger count",
+            "crew count", "flight type", "weather conditions", "fuel consumption",
+            "night flight", "remarks"
+        ]
     }
 }
 

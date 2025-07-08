@@ -2,6 +2,7 @@ import random
 import uuid
 from typing import Any, Dict, List
 from faker import Faker
+from datetime import datetime, timedelta
 
 class DataGenerator:
     def __init__(self, seed: int = None):
@@ -34,6 +35,8 @@ class DataGenerator:
             return self._generate_logistics(num_records)
         elif topic == "Banking":
             return self._generate_banking(num_records)
+        elif topic == "Pilot_Log_Book":
+            return self._generate_pilot_log_book(num_records)
         else:
             # Custom topic generation
             return self._generate_custom(num_records, custom_fields or [])
@@ -368,6 +371,73 @@ class DataGenerator:
             }
             for _ in range(num_records)
         ]
+    
+    def _generate_pilot_log_book(self, num_records: int) -> List[Dict[str, Any]]:
+        airport_codes = [
+            "KATL", "KLAX", "KORD", "KJFK", "LHR", "CDG", "DEL", "BOM",
+            "VABB", "VIDP", "KSFO", "KSEA", "EGLL", "OMDB", "WSSS"
+        ]
+        aircraft_types = ["Boeing 737", "Airbus A320", "Cessna 172", "Piper PA-28",
+            "Boeing 747", "Airbus A380", "Embraer ERJ-145", "Bombardier CRJ-200"]
+        flight_statuses = ["Scheduled", "In Progress", "Completed", "Cancelled", "Delayed"]
+        weather_conditions = ["VFR", "IFR", "Marg IFR", "Low IFR"]
+        flight_types = ["Commercial", "Private", "Training", "Ferry"]
+        pilot_roles = ["Captain", "First Officer", "Flight Engineer", "Relief Pilot"]
+        remarks = ["Smooth flight", "Turbulence encountered", "Weather conditions normal",
+            "Delayed due to air traffic", "Emergency landing", "Technical issues", "Successful flight", "Night flight", "Day flight"]
+        logs = []
+        for i in range(num_records):
+            # Ensure departure and arrival airports are different
+            departure_airport = random.choice(airport_codes)
+            arrival_airport = random.choice([code for code in airport_codes if code != departure_airport])
+            
+            # Generate flight date and times
+            flight_date = self.fake.date_between(start_date='-1y', end_date='now')
+            departure_time = self.fake.time_object()
+            # Calculate arrival time based on flight duration
+            flight_duration = round(random.uniform(0.5, 12), 2)
+            departure_datetime = datetime.combine(flight_date, departure_time)
+            arrival_datetime = departure_datetime + timedelta(hours=flight_duration)
+            
+            # Adjust passenger count based on aircraft type
+            aircraft = random.choice(aircraft_types)
+            if aircraft in ["Cessna 172", "Piper PA-28"]:
+                passenger_count = random.randint(1, 4)
+                fuel_consumption = round(random.uniform(5, 20), 1)  # Gallons
+            elif aircraft in ["Embraer ERJ-145", "Bombardier CRJ-200"]:
+                passenger_count = random.randint(20, 50)
+                fuel_consumption = round(random.uniform(500, 1500), 1)  # Pounds
+            else:
+                passenger_count = random.randint(50, 300)
+                fuel_consumption = round(random.uniform(5000, 20000), 1)  # Pounds
+
+            # Determine if flight is night or day
+            is_night_flight = departure_time.hour >= 20 or departure_time.hour <= 6
+
+            log_entry = {
+                "flight id": f"FLT{str(i+1).zfill(3)}",
+                "pilot name": self.fake.name(),
+                "pilot license number": f"PIL{self.fake.bothify(text='??####')}",
+                "pilot role": random.choice(pilot_roles),
+                "aircraft type": aircraft,
+                "departure airport": departure_airport,
+                "arrival airport": arrival_airport,
+                "flight date": flight_date.isoformat(),
+                "departure time": departure_time.strftime("%H:%M:%S"),
+                "arrival time": arrival_datetime.time().strftime("%H:%M:%S"),
+                "flight time hours": flight_duration,
+                "flight status": random.choice(flight_statuses),
+                "flight number": f"{self.fake.bothify(text='??###')}",
+                "passenger count": passenger_count,
+                "crew count": random.randint(1, 10),
+                "flight type": random.choice(flight_types),
+                "weather conditions": random.choice(weather_conditions),
+                "fuel consumption": fuel_consumption,
+                "night flight": is_night_flight,
+                "remarks": random.choice(remarks),
+            }
+            logs.append(log_entry)
+        return logs
     
     def _generate_custom(self, num_records: int, custom_fields: List[str]) -> List[Dict[str, Any]]:
         """Generate custom data based on field names"""
