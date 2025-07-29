@@ -484,3 +484,5 @@ class DataGenerator:
                     record[field] = self.fake.word()
             data.append(record)
         return data
+        
+        
