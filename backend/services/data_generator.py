@@ -37,6 +37,8 @@ class DataGenerator:
             return self._generate_banking(num_records)
         elif topic == "Pilot_Log_Book":
             return self._generate_pilot_log_book(num_records)
+        elif topic == "Weather":
+            return self._generate_Weather_Data(num_records)
         else:
             # Custom topic generation
             return self._generate_custom(num_records, custom_fields or [])
@@ -450,6 +452,65 @@ class DataGenerator:
             }
             logs.append(log_entry)
         return logs
+    
+    def _generate_Weather_Data(self, num_records: int) -> List[Dict[str, Any]]:
+        locations = [
+            "New York, NY", "Los Angeles, CA", "Chicago, IL", "Houston, TX", "Phoenix, AZ",
+            "London, UK", "Paris, FR", "Delhi, IN", "Mumbai, IN", "Tokyo, JP",
+            "Dubai, AE", "Singapore, SG", "Sydney, AU", "Toronto, CA", "Moscow, RU"
+        ]
+        weather_conditions = ["Rain", "Snow", "Thunderstorm", "Fog", "Partly Cloudy", "Cloudy", "Clear", "Overcast", "Drizzle", "Hail", "Sleet", "Freezing Rain", "Light Rain", "Heavy Rain", "Light Snow", "Heavy Snow", "Blizzard"]
+        wind_directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+        weather_data = []
+        
+        for i in range(num_records):
+            observation_time = self.fake.date_time_between(start_date='-1y', end_date='now')
+            
+            # Generate temperature in Celsius, adjusted for location and time of year
+            location = random.choice(locations)
+            month = observation_time.month
+            if location in ["Delhi, IN", "Mumbai, IN", "Dubai, AE", "Singapore, SG"]:
+                temperature = round(random.uniform(20, 40), 1)
+            elif location in ["Moscow, RU"] and month in [12, 1, 2]:
+                temperature = round(random.uniform(-20, 5), 1)
+            else:
+                temperature = round(random.uniform(-5, 35), 1)
+                
+            # Generate other weather parameters
+            humidity = random.randint(20, 100)
+            pressure = round(random.uniform(980, 1040), 1)
+            wind_speed = round(random.uniform(0, 50), 1)
+            
+            # Adjust precipitation based on weather condition
+            condition = random.choice(weather_conditions)
+            if condition in ["Rain", "Snow", "Thunderstorm", "Fog", "Partly Cloudy", "Cloudy", "Clear", "Overcast", "Drizzle", "Hail", "Sleet", "Freezing Rain", "Light Rain", "Heavy Rain", "Light Snow", "Heavy Snow", "Blizzard"]:
+                precipitation = round(random.uniform(0.1, 20), 1)
+            else:
+                precipitation = 0.0
+                
+            # Determine if it's day or night
+            is_night = observation_time.hour >= 20 or observation_time.hour <= 6
+            
+            weather_entry = {
+                "record_id": f"WTH{str(i+1).zfill(3)}",
+                "location": location,
+                "observation_time": observation_time.isoformat(),
+                "temperature_c": temperature,
+                "weather_condition": condition,
+                "humidity_percent": humidity,
+                "pressure_mb": pressure,
+                "wind_speed_kmh": wind_speed,
+                "wind_direction": random.choice(wind_directions),
+                "precipitation_mm": precipitation,
+                "is_night": is_night,
+                "visibility_km": round(random.uniform(0.5, 20), 1) if condition != "Fog" else round(random.uniform(0.1, 1), 1),
+                "cloud_cover_percent": random.randint(0, 100),
+                "dew_point_c": round(temperature - random.uniform(0, 5), 1)
+            }
+            weather_data.append(weather_entry)
+        
+        return weather_data
+
     
     def _generate_custom(self, num_records: int, custom_fields: List[str]) -> List[Dict[str, Any]]:
         """Generate custom data based on field names"""

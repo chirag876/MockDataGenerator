@@ -57,6 +57,25 @@ PREDEFINED_TOPICS = {
             "crew count", "flight type", "weather conditions", "fuel consumption",
             "night flight", "remarks"
         ]
+    },
+    "Weather": {
+        "description": "Weather data for various locations",
+        "fields": [
+            "record_id",
+            "location",
+            "observation_time",
+            "temperature_c",
+            "weather_condition",
+            "humidity_percent",
+            "pressure_mb",
+            "wind_speed_kmh",
+            "wind_direction",
+            "precipitation_mm",
+            "is_night",
+            "visibility_km",
+            "cloud_cover_percent",
+            "dew_point_c"
+        ]
     }
 }
 
