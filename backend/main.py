@@ -20,12 +20,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 @app.get("/ping")
 def ping():
     return {"message": "pong"}
+
+
 @app.get("/")
 async def root():
     return {"message": "Mock Data Generator API is running!"}
+
 
 @app.get("/topics", response_model=List[TopicInfo])
 async def get_topics():
@@ -39,10 +44,12 @@ async def get_topics():
         ))
     return topics
 
+
 @app.get("/formats")
 async def get_formats():
     """Get all supported formats"""
     return {"formats": SUPPORTED_FORMATS}
+
 
 @app.post("/generate", response_model=DataResponse)
 async def generate_data(request: DataRequest):
@@ -50,30 +57,31 @@ async def generate_data(request: DataRequest):
     try:
         # Initialize data generator
         generator = DataGenerator(seed=request.seed)
-        
+
         # Generate data
         data = generator.generate_for_topic(
             topic=request.topic,
             num_records=request.num_records,
             custom_fields=request.custom_fields
         )
-        
+
         # Convert to requested format
         content, filename, content_type = FormatConverter.convert_to_format(
             data=data,
             format_type=request.format.value,
             topic=request.topic
         )
-        
+
         return DataResponse(
             success=True,
             data=content,
             filename=filename,
             content_type=content_type
         )
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/download")
 async def download_data(request: DataRequest):
@@ -86,14 +94,14 @@ async def download_data(request: DataRequest):
             num_records=request.num_records,
             custom_fields=request.custom_fields
         )
-        
+
         # Convert to format
         content, filename, content_type = FormatConverter.convert_to_format(
             data=data,
             format_type=request.format.value,
             topic=request.topic
         )
-        
+
         # Handle binary formats
         if content_type == "application/octet-stream":
             # Content is base64 encoded for binary formats
@@ -109,7 +117,7 @@ async def download_data(request: DataRequest):
                 media_type=content_type,
                 headers={"Content-Disposition": f"attachment; filename={filename}"}
             )
-            
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -13,7 +13,8 @@ class FormatEnum(str, Enum):
     PARQUET = "Parquet"
     AVRO = "Avro"
     PROTOBUF = "Protobuf"
-    
+
+
 class DataRequest(BaseModel):
     topic: str
     format: FormatEnum
@@ -21,10 +22,12 @@ class DataRequest(BaseModel):
     custom_fields: Optional[List[str]] = None
     seed: Optional[int] = None
 
+
 class TopicInfo(BaseModel):
     name: str
     description: str
     fields: List[str]
+
 
 class DataResponse(BaseModel):
     success: bool
