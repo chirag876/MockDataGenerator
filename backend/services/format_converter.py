@@ -34,18 +34,19 @@ class FormatConverter:
             if isinstance(data, list) and len(data) > 0:
                 # Option 1: Keep as list but with better formatting
                 content = yaml.dump(
-                    data, 
-                    default_flow_style=False, 
+                    data,
+                    default_flow_style=False,
                     allow_unicode=True,
                     indent=2,
                     width=1000,              # Prevent line wrapping
                     sort_keys=False,
-                    explicit_end = False,
-                    explicit_start = False
+                    explicit_end=False,
+                    explicit_start=False
                 )
             else:
-                content = yaml.dump(data, default_flow_style=False, allow_unicode=True)
-            
+                content = yaml.dump(
+                    data, default_flow_style=False, allow_unicode=True)
+
             return content, f"{topic}_data_{timestamp}.yaml", "application/x-yaml"
 
         elif format_type == "XML":

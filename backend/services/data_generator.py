@@ -4,13 +4,14 @@ from typing import Any, Dict, List
 from faker import Faker
 from datetime import datetime, timedelta
 
+
 class DataGenerator:
     def __init__(self, seed: int = None):
         self.fake = Faker(['en_US'])  # English and Hindi locales
         if seed:
             Faker.seed(seed)
             random.seed(seed)
-    
+
     def generate_for_topic(self, topic: str, num_records: int, custom_fields: List[str] = None) -> List[Dict[str, Any]]:
         """Generate fake data based on topic"""
         if topic == "Citizen":
@@ -42,17 +43,21 @@ class DataGenerator:
         else:
             # Custom topic generation
             return self._generate_custom(num_records, custom_fields or [])
-    
+
     def _generate_citizen(self, num_records: int) -> List[Dict[str, Any]]:
         # field_data = self._load_field_data(assets_File_path)
         marital_statuses = ["Single", "Married", "Divorced", "Widowed"]
         genders = ["Male", "Female", "Other"]
-        religions = ["Hindu", "Muslim", "Christian", "Sikh", "Jain", "Buddhist", "Other"]
-        nationalities = ["Indian", "American", "British", "Canadian", "Australian", "Other"]
-        disablitystatus = ["None", "Visually Impaired", "Hearing Impaired", "Physically Disabled", "Mentally Challenged"]
+        religions = ["Hindu", "Muslim", "Christian",
+                     "Sikh", "Jain", "Buddhist", "Other"]
+        nationalities = ["Indian", "American",
+                         "British", "Canadian", "Australian", "Other"]
+        disablitystatus = ["None", "Visually Impaired",
+                           "Hearing Impaired", "Physically Disabled", "Mentally Challenged"]
         bloodgroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
-        emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
-       
+        emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com",
+                        "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
+
         return [
             {
                 "citizen id": f"CIT{str(i+1).zfill(2)}",
@@ -76,14 +81,14 @@ class DataGenerator:
             }
             for i in range(num_records)
         ]
-    
+
     def _generate_products(self, num_records: int) -> List[Dict[str, Any]]:
         categories = [
-            "Electronics", "Clothing", "Books", "Home", "Sports", "Beauty", "Automotive", 
-            "Toys", "Grocery", "Furniture", "Jewelry", "Shoes", "Pet Supplies", "Music", 
-            "Video Games", "Health", "Office Supplies", "Garden", "Baby Products", 
-            "Tools & Hardware", "Watches", "Stationery", "Mobile Accessories", 
-            "Luggage & Travel", "Crafts & Sewing", "Kitchen Appliances", 
+            "Electronics", "Clothing", "Books", "Home", "Sports", "Beauty", "Automotive",
+            "Toys", "Grocery", "Furniture", "Jewelry", "Shoes", "Pet Supplies", "Music",
+            "Video Games", "Health", "Office Supplies", "Garden", "Baby Products",
+            "Tools & Hardware", "Watches", "Stationery", "Mobile Accessories",
+            "Luggage & Travel", "Crafts & Sewing", "Kitchen Appliances",
             "Smart Home Devices", "Cleaning Supplies", "Lighting", "Fitness Equipment"
         ]
         brands_by_category = {
@@ -95,9 +100,11 @@ class DataGenerator:
             "Kitchen Appliances": ["Prestige", "Philips", "Bajaj", "Havells", "Morphy Richards"],
             "default": ["Generic", "Local", "BrandX", "BrandY", "BrandZ"]
         }
-        materials = ["Plastic", "Metal", "Wood", "Fabric", "Glass", "Leather", "Ceramic"]
-        availability_status = ["In Stock", "Out of Stock", "Pre-Order", "Limited Stock"]
-        
+        materials = ["Plastic", "Metal", "Wood",
+                     "Fabric", "Glass", "Leather", "Ceramic"]
+        availability_status = ["In Stock",
+                               "Out of Stock", "Pre-Order", "Limited Stock"]
+
         def generate_product_name(category: str) -> str:
             if category == "Electronics":
                 return f"{random.choice(brands_by_category[category])} {random.choice(['Smartphone', 'TV', 'Laptop', 'Tablet', 'Headphones'])} {random.choice(['Pro', 'Plus', 'Ultra', 'Lite', ''])}"
@@ -111,44 +118,48 @@ class DataGenerator:
                 return f"{random.choice(brands_by_category.get(category, brands_by_category['default']))} {self.fake.word().capitalize()} {random.choice(['Pro', 'Classic', 'Premium', ''])}"
 
         return [
+            (
+                lambda: (
+                    lambda category, price_inr, discount_percentage, stock_quantity: {
+                        "product id": f"PROD{str(i+1).zfill(2)}",
+                        "name": generate_product_name(category=category),
+                        "category": category,
+                        "brand": random.choice(brands_by_category.get(category, brands_by_category['default'])),
+                        "price inr": price_inr,
+                        "discount percentage": discount_percentage,
+                        "final price inr": round(price_inr * (1 - discount_percentage / 100), 2),
+                        "sku": f"SKU-{str(uuid.uuid4())[:8].upper()}",
+                        "stock quantity": stock_quantity,
+                        "availability": "Out of Stock" if stock_quantity == 0 else random.choice(availability_status),
+                        "description": self.fake.text(max_nb_chars=100),
+                        "weight kg": round(random.uniform(0.1, 50), 2),
+                        "dimensions cm": f"{random.randint(5, 200)}x{random.randint(5, 200)}x{random.randint(5, 200)}",
+                        "material": random.choice(materials) if random.random() > 0.2 else "Plastic",
+                        "warranty months": random.randint(6, 36) if random.random() > 0.5 else "No Warranty on this product",
+                        "rating": round(random.uniform(1, 5), 1),
+                        "reviews count": random.randint(0, 500),
+                        "made in": random.choice(["India", "China", "USA", "Germany", "Japan"])
+                    }
+                )
                 (
-                    lambda: (
-                        lambda category, price_inr, discount_percentage, stock_quantity: {
-                            "product id": f"PROD{str(i+1).zfill(2)}",
-                            "name": generate_product_name(category=category),
-                            "category": category,
-                            "brand": random.choice(brands_by_category.get(category, brands_by_category['default'])),
-                            "price inr": price_inr,
-                            "discount percentage": discount_percentage,
-                            "final price inr": round(price_inr * (1 - discount_percentage / 100), 2),
-                            "sku": f"SKU-{str(uuid.uuid4())[:8].upper()}",
-                            "stock quantity": stock_quantity,
-                            "availability": "Out of Stock" if stock_quantity == 0 else random.choice(availability_status),
-                            "description": self.fake.text(max_nb_chars=100),
-                            "weight kg": round(random.uniform(0.1, 50), 2),
-                            "dimensions cm": f"{random.randint(5, 200)}x{random.randint(5, 200)}x{random.randint(5, 200)}",
-                            "material": random.choice(materials) if random.random() > 0.2 else "Plastic",
-                            "warranty months": random.randint(6, 36) if random.random() > 0.5 else "No Warranty on this product",
-                            "rating": round(random.uniform(1, 5), 1),
-                            "reviews count": random.randint(0, 500),
-                            "made in": random.choice(["India", "China", "USA", "Germany", "Japan"])
-                        }
-                    )
-                    (
-                        category := random.choice(categories),
-                        price_inr := round(random.uniform(100, 100000), 2),
-                        discount_percentage := random.randint(0, 50) if random.random() > 0.3 else 0,
-                        stock_quantity := random.randint(0, 1000)
-                    )
-                )()
-                for i in range(num_records)
-            ]
+                    category := random.choice(categories),
+                    price_inr := round(random.uniform(100, 100000), 2),
+                    discount_percentage := random.randint(0, 50) if random.random() > 0.3 else 0,
+                    stock_quantity := random.randint(0, 1000)
+                )
+            )()
+            for i in range(num_records)
+        ]
 
     def _generate_orders(self, num_records: int) -> List[Dict[str, Any]]:
-        statuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"]
-        emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
-        payment_methods = ["Credit Card", "Debit Card", "PayPal", "Net Banking", "Cash on Delivery", "UPI", "Wallet"]
-        orderchannels = ["Online", "In-Store", "Mobile App", "Phone Order", "Email Order"]
+        statuses = ["Pending", "Processing",
+                    "Shipped", "Delivered", "Cancelled"]
+        emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com",
+                        "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
+        payment_methods = ["Credit Card", "Debit Card", "PayPal",
+                           "Net Banking", "Cash on Delivery", "UPI", "Wallet"]
+        orderchannels = ["Online", "In-Store",
+                         "Mobile App", "Phone Order", "Email Order"]
         return [
             {
                 "order id": f"ORD-{str(uuid.uuid4())[:8].upper()}",
@@ -168,16 +179,18 @@ class DataGenerator:
             }
             for i in range(num_records)
         ]
-    
+
     def _generate_employees(self, num_records: int) -> List[Dict[str, Any]]:
-        departments = ["IT", "HR", "Finance", "Marketing", "Operations", "Sales", "Legal"]
+        departments = ["IT", "HR", "Finance",
+                       "Marketing", "Operations", "Sales", "Legal"]
         employment_types = ["Full-time", "Part-time", "Contractor", "Intern"]
         statuses = ["Active", "Resigned", "On Leave"]
         genders = ["Male", "Female", "Other"]
-        performance_ratings = ["Excellent", "Good", "Average", "Below Average", "Poor"]
+        performance_ratings = ["Excellent", "Good",
+                               "Average", "Below Average", "Poor"]
         emaildomains = [
-            "gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", 
-            "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com", 
+            "gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com",
+            "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com",
             "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"
         ]
         bloodgroups = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
@@ -206,9 +219,10 @@ class DataGenerator:
             }
             for i in range(num_records)
         ]
-    
+
     def _generate_healthcare(self, num_records: int) -> List[Dict[str, Any]]:
-        diagnoses = ["Hypertension", "Diabetes", "Asthma", "Migraine", "Arthritis", "Flu", "COVID-19"]
+        diagnoses = ["Hypertension", "Diabetes", "Asthma",
+                     "Migraine", "Arthritis", "Flu", "COVID-19"]
         gender = ["Male", "Female", "Other"]
         return [
             {
@@ -224,9 +238,10 @@ class DataGenerator:
             }
             for i in range(num_records)
         ]
-    
+
     def _generate_education(self, num_records: int) -> List[Dict[str, Any]]:
-        courses = ["Computer Science", "Mathematics", "Physics", "Chemistry", "Biology", "History", "English"]
+        courses = ["Computer Science", "Mathematics", "Physics",
+                   "Chemistry", "Biology", "History", "English"]
         grades = ["A+", "A", "B+", "B", "C+", "C", "D", "F"]
         return [
             {
@@ -241,11 +256,14 @@ class DataGenerator:
             }
             for i in range(num_records)
         ]
-    
+
     def _generate_real_estate(self, num_records: int) -> List[Dict[str, Any]]:
-        property_types = ["Apartment", "House", "Condo", "Townhouse", "Villa", "Studio", "Farmhouse", "Penthouse", "Duplex", "Bungalow"]
-        amenities = ["Swimming Pool", "Gymnasium", "Garden", "Turf", "Security", "Play Area", "Clubhouse", None]
-        floors = ["Ground", "1st", "Upper Ground", "2nd", "Third", "4Th", "5Th", "6Th", "7Th", "8Th", "9Th", "10Th", "11Th", "12Th", "13Th", "14Th", "15Th", "16Th", "17Th", "18Th", "19Th", "20Th"]
+        property_types = ["Apartment", "House", "Condo", "Townhouse",
+                          "Villa", "Studio", "Farmhouse", "Penthouse", "Duplex", "Bungalow"]
+        amenities = ["Swimming Pool", "Gymnasium", "Garden",
+                     "Turf", "Security", "Play Area", "Clubhouse", None]
+        floors = ["Ground", "1st", "Upper Ground", "2nd", "Third", "4Th", "5Th", "6Th", "7Th", "8Th",
+                  "9Th", "10Th", "11Th", "12Th", "13Th", "14Th", "15Th", "16Th", "17Th", "18Th", "19Th", "20Th"]
         return [
             {
                 "property id": f"PRT{str(i+1).zfill(2)}",
@@ -270,11 +288,14 @@ class DataGenerator:
             }
             for i in range(num_records)
         ]
-    
+
     def _generate_social_media(self, num_records: int) -> List[Dict[str, Any]]:
-        platforms = ["Facebook", "Twitter", "Instagram", "LinkedIn", "TikTok", "YouTube"]
-        languages = ["English", "Hindi", "Spanish", "French", "German", "Chinese", "Japanese", "Russian", "Arabic", "Portuguese"]
-        post_types = ["Text", "Image", "Video", "Link", "Poll", "Story", "Reel", "Live Stream", "Status Update", "Event"]
+        platforms = ["Facebook", "Twitter", "Instagram",
+                     "LinkedIn", "TikTok", "YouTube"]
+        languages = ["English", "Hindi", "Spanish", "French", "German",
+                     "Chinese", "Japanese", "Russian", "Arabic", "Portuguese"]
+        post_types = ["Text", "Image", "Video", "Link", "Poll",
+                      "Story", "Reel", "Live Stream", "Status Update", "Event"]
 
         return [
             {
@@ -298,8 +319,10 @@ class DataGenerator:
         ]
 
     def _generate_iot_sensors(self, num_records: int) -> List[Dict[str, Any]]:
-        sensor_types = ["Temperature", "Humidity", "Pressure", "Motion", "Light", "Sound", "Gas", "Water Quality", "Soil Moisture", "Air Quality", "Vibration", "Proximity", "Accelerometer", "Gyroscope", "Magnetometer", "pH Level", "UV Index", "CO2 Level", "PM2.5", "PM10"]
-        statuses = ["Active", "Idle", "Faulty", "Offline", "Maintenance", "Decommissioned", "Testing", "Calibration", "Alert", "Normal", "Warning", "Critical", "Standby", "Ready", "Busy", "Disconnected"]
+        sensor_types = ["Temperature", "Humidity", "Pressure", "Motion", "Light", "Sound", "Gas", "Water Quality", "Soil Moisture", "Air Quality",
+                        "Vibration", "Proximity", "Accelerometer", "Gyroscope", "Magnetometer", "pH Level", "UV Index", "CO2 Level", "PM2.5", "PM10"]
+        statuses = ["Active", "Idle", "Faulty", "Offline", "Maintenance", "Decommissioned", "Testing",
+                    "Calibration", "Alert", "Normal", "Warning", "Critical", "Standby", "Ready", "Busy", "Disconnected"]
         return [
             {
                 "reading id": str(uuid.uuid4()),
@@ -319,18 +342,23 @@ class DataGenerator:
             }
             for i in range(num_records)
         ]
-    
+
     def _generate_logistics(self, num_records: int) -> List[Dict[str, Any]]:
-        statuses = ["In Transit", "Delivered", "Pending", "Out for Delivery", "Delayed"]
-        package_types = ["Box", "Envelope", "Pallet", "Crate", "Parcel", "Freight", "Container", "Bag", "Roll", "Tube", "Cylinder", "Drum", "Carton", "Bundle", "Packet", "Satchel"]
+        statuses = ["In Transit", "Delivered",
+                    "Pending", "Out for Delivery", "Delayed"]
+        package_types = ["Box", "Envelope", "Pallet", "Crate", "Parcel", "Freight", "Container",
+                         "Bag", "Roll", "Tube", "Cylinder", "Drum", "Carton", "Bundle", "Packet", "Satchel"]
         priority_levels = ["Standard", "Express", "Overnight"]
-        delayed_reasons = ["Weather Delay", "Customs Hold", "Technical Issue", "High Volume"]
-        
+        delayed_reasons = ["Weather Delay", "Customs Hold",
+                           "Technical Issue", "High Volume"]
+
         records = []
         for _ in range(num_records):
             status = random.choice(statuses)
-            estimated_delivery = self.fake.date_between(start_date='now', end_date='+30d')
-            shipment_date = self.fake.date_between(start_date='-10d', end_date='today')
+            estimated_delivery = self.fake.date_between(
+                start_date='now', end_date='+30d')
+            shipment_date = self.fake.date_between(
+                start_date='-10d', end_date='today')
 
             record = {
                 "tracking id": f"TRK{str(uuid.uuid4())[:10].upper()}",
@@ -358,14 +386,17 @@ class DataGenerator:
                 "delayed reason": random.choice(delayed_reasons) if status == "Delayed" else None
             }
             records.append(record)
-        
+
         return records
 
     def _generate_banking(self, num_records: int) -> List[Dict[str, Any]]:
-        transaction_types = ["Deposit", "Withdrawal", "Transfer", "Payment", "Interest"]
-        transaction_statuses = ["Success", "Failed", "Pending", "Reversed", "Partially settled", "Cancelled", "Refunded", "Settled", "Disputed", "Charged Off"]
+        transaction_types = ["Deposit", "Withdrawal",
+                             "Transfer", "Payment", "Interest"]
+        transaction_statuses = ["Success", "Failed", "Pending", "Reversed",
+                                "Partially settled", "Cancelled", "Refunded", "Settled", "Disputed", "Charged Off"]
         channels = ["ATM", "Online Banking", "Mobile App", "UPI", "POS"]
-        currencies = ["INR", "USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", "RUB", "ZAR", "BRL", "INR", "HKD", "SGD", "KRW", "MXN", "NZD", "SEK", "NOK", "DKK"]
+        currencies = ["INR", "USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", "RUB",
+                      "ZAR", "BRL", "INR", "HKD", "SGD", "KRW", "MXN", "NZD", "SEK", "NOK", "DKK"]
 
         return [
             {
@@ -385,34 +416,39 @@ class DataGenerator:
             }
             for _ in range(num_records)
         ]
-    
+
     def _generate_pilot_log_book(self, num_records: int) -> List[Dict[str, Any]]:
         airport_codes = [
             "KATL", "KLAX", "KORD", "KJFK", "LHR", "CDG", "DEL", "BOM",
             "VABB", "VIDP", "KSFO", "KSEA", "EGLL", "OMDB", "WSSS"
         ]
         aircraft_types = ["Boeing 737", "Airbus A320", "Cessna 172", "Piper PA-28",
-            "Boeing 747", "Airbus A380", "Embraer ERJ-145", "Bombardier CRJ-200"]
-        flight_statuses = ["Scheduled", "In Progress", "Completed", "Cancelled", "Delayed"]
+                          "Boeing 747", "Airbus A380", "Embraer ERJ-145", "Bombardier CRJ-200"]
+        flight_statuses = ["Scheduled", "In Progress",
+                           "Completed", "Cancelled", "Delayed"]
         weather_conditions = ["VFR", "IFR", "Marg IFR", "Low IFR"]
         flight_types = ["Commercial", "Private", "Training", "Ferry"]
-        pilot_roles = ["Captain", "First Officer", "Flight Engineer", "Relief Pilot"]
+        pilot_roles = ["Captain", "First Officer",
+                       "Flight Engineer", "Relief Pilot"]
         remarks = ["Smooth flight", "Turbulence encountered", "Weather conditions normal",
-            "Delayed due to air traffic", "Emergency landing", "Technical issues", "Successful flight", "Night flight", "Day flight"]
+                   "Delayed due to air traffic", "Emergency landing", "Technical issues", "Successful flight", "Night flight", "Day flight"]
         logs = []
         for i in range(num_records):
             # Ensure departure and arrival airports are different
             departure_airport = random.choice(airport_codes)
-            arrival_airport = random.choice([code for code in airport_codes if code != departure_airport])
-            
+            arrival_airport = random.choice(
+                [code for code in airport_codes if code != departure_airport])
+
             # Generate flight date and times
-            flight_date = self.fake.date_between(start_date='-1y', end_date='now')
+            flight_date = self.fake.date_between(
+                start_date='-1y', end_date='now')
             departure_time = self.fake.time_object()
             # Calculate arrival time based on flight duration
             flight_duration = round(random.uniform(0.5, 12), 2)
             departure_datetime = datetime.combine(flight_date, departure_time)
-            arrival_datetime = departure_datetime + timedelta(hours=flight_duration)
-            
+            arrival_datetime = departure_datetime + \
+                timedelta(hours=flight_duration)
+
             # Adjust passenger count based on aircraft type
             aircraft = random.choice(aircraft_types)
             if aircraft in ["Cessna 172", "Piper PA-28"]:
@@ -420,10 +456,12 @@ class DataGenerator:
                 fuel_consumption = round(random.uniform(5, 20), 1)  # Gallons
             elif aircraft in ["Embraer ERJ-145", "Bombardier CRJ-200"]:
                 passenger_count = random.randint(20, 50)
-                fuel_consumption = round(random.uniform(500, 1500), 1)  # Pounds
+                fuel_consumption = round(
+                    random.uniform(500, 1500), 1)  # Pounds
             else:
                 passenger_count = random.randint(50, 300)
-                fuel_consumption = round(random.uniform(5000, 20000), 1)  # Pounds
+                fuel_consumption = round(
+                    random.uniform(5000, 20000), 1)  # Pounds
 
             # Determine if flight is night or day
             is_night_flight = departure_time.hour >= 20 or departure_time.hour <= 6
@@ -452,20 +490,22 @@ class DataGenerator:
             }
             logs.append(log_entry)
         return logs
-    
+
     def _generate_Weather_Data(self, num_records: int) -> List[Dict[str, Any]]:
         locations = [
             "New York, NY", "Los Angeles, CA", "Chicago, IL", "Houston, TX", "Phoenix, AZ",
             "London, UK", "Paris, FR", "Delhi, IN", "Mumbai, IN", "Tokyo, JP",
             "Dubai, AE", "Singapore, SG", "Sydney, AU", "Toronto, CA", "Moscow, RU"
         ]
-        weather_conditions = ["Rain", "Snow", "Thunderstorm", "Fog", "Partly Cloudy", "Cloudy", "Clear", "Overcast", "Drizzle", "Hail", "Sleet", "Freezing Rain", "Light Rain", "Heavy Rain", "Light Snow", "Heavy Snow", "Blizzard"]
+        weather_conditions = ["Rain", "Snow", "Thunderstorm", "Fog", "Partly Cloudy", "Cloudy", "Clear", "Overcast",
+                              "Drizzle", "Hail", "Sleet", "Freezing Rain", "Light Rain", "Heavy Rain", "Light Snow", "Heavy Snow", "Blizzard"]
         wind_directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
         weather_data = []
-        
+
         for i in range(num_records):
-            observation_time = self.fake.date_time_between(start_date='-1y', end_date='now')
-            
+            observation_time = self.fake.date_time_between(
+                start_date='-1y', end_date='now')
+
             # Generate temperature in Celsius, adjusted for location and time of year
             location = random.choice(locations)
             month = observation_time.month
@@ -475,22 +515,22 @@ class DataGenerator:
                 temperature = round(random.uniform(-20, 5), 1)
             else:
                 temperature = round(random.uniform(-5, 35), 1)
-                
+
             # Generate other weather parameters
             humidity = random.randint(20, 100)
             pressure = round(random.uniform(980, 1040), 1)
             wind_speed = round(random.uniform(0, 50), 1)
-            
+
             # Adjust precipitation based on weather condition
             condition = random.choice(weather_conditions)
             if condition in ["Rain", "Snow", "Thunderstorm", "Fog", "Partly Cloudy", "Cloudy", "Clear", "Overcast", "Drizzle", "Hail", "Sleet", "Freezing Rain", "Light Rain", "Heavy Rain", "Light Snow", "Heavy Snow", "Blizzard"]:
                 precipitation = round(random.uniform(0.1, 20), 1)
             else:
                 precipitation = 0.0
-                
+
             # Determine if it's day or night
             is_night = observation_time.hour >= 20 or observation_time.hour <= 6
-            
+
             weather_entry = {
                 "record_id": f"WTH{str(i+1).zfill(3)}",
                 "location": location,
@@ -508,14 +548,14 @@ class DataGenerator:
                 "dew_point_c": round(temperature - random.uniform(0, 5), 1)
             }
             weather_data.append(weather_entry)
-        
+
         return weather_data
 
-    
     def _generate_custom(self, num_records: int, custom_fields: List[str]) -> List[Dict[str, Any]]:
         """Generate custom data based on field names"""
         data = []
-        emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com", "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
+        emaildomains = ["gmail.com", "yahoo.com", "outlook.com", "rediffmail.com", "hotmail.com", "live.com", "icloud.com",
+                        "protonmail.com", "zoho.com", "mail.com", "aol.com", "yandex.com", "tutanota.com", "fastmail.com", "gmx.com", "hushmail.com"]
         for i in range(num_records):
             record = {"id": i + 1}
             for field in custom_fields:
@@ -537,7 +577,8 @@ class DataGenerator:
                 elif "description" in field_lower:
                     record[field] = self.fake.text(max_nb_chars=200)
                 elif "status" in field_lower:
-                    record[field] = random.choice(["Active", "Inactive", "Pending", "Completed"])
+                    record[field] = random.choice(
+                        ["Active", "Inactive", "Pending", "Completed"])
                 elif "category" in field_lower:
                     record[field] = self.fake.word().capitalize()
                 else:
@@ -545,5 +586,3 @@ class DataGenerator:
                     record[field] = self.fake.word()
             data.append(record)
         return data
-        
-        
