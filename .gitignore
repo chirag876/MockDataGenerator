@@ -2,6 +2,7 @@
 myenv/
 venv/
 env/
+mocenv/
 
 # Ignore __pycache__ and .pyc files
 __pycache__/
