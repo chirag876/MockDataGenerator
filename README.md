@@ -140,3 +140,27 @@ Not finding the right predefined topic? Create your own custom data schema by sp
 
 This project is licensed under the [MIT License](./LICENSE).  
 © 2025 Chirag Gupta. Please credit if reused.
+
+```
+MockDataGenerator
+├─ backend
+│  ├─ main.py
+│  ├─ models
+│  │  └─ schemas.py
+│  ├─ services
+│  │  ├─ data_generator.py
+│  │  └─ format_converter.py
+│  └─ utils
+│     └─ constants.py
+├─ frontend
+│  ├─ index.html
+│  ├─ script.js
+│  └─ style.css
+├─ LICENSE
+├─ README.md
+├─ requirements.txt
+├─ run.py
+└─ screenshots
+   └─ Main-Interface.png
+
+```

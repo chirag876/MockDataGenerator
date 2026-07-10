@@ -1,81 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎲 Mock Data Generator</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MockForge — Mock Data Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-    <button class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">
-        <span id="theme-icon">🌙</span>
-    </button>
-    <div class="container">
-        <div class="main-content">
-            <div class="header">
-                <h1>🎲 Mock Data Generator</h1>
-                <p>Generate structured and realistic sample data in a variety of formats to streamline development and
-                    QA processes.</p>
-            </div>
-            <div id="error-message" class="error" style="display: none;"></div>
-            <div id="success-message" class="success" style="display: none;"></div>
-            <form id="metric-form" autocomplete="off">
-                <div class="metrics metrics-form">
-                    <!-- Topic Card -->
-                    <div class="metric-card metric-form-card">
-                        <h4>Topic</h4>
-                        <select id="topic-select" name="topic"></select>
-                        <div id="topic-description" class="form-group"></div>
-                        <div id="custom-fields" style="display: none;">
-                            <h5>🛠️ Custom Fields</h5>
-                            <textarea id="custom-fields-input"
-                                placeholder="Enter field names (one per line)"></textarea>
-                        </div>
-                    </div>
-                    <!-- Format Card -->
-                    <div class="metric-card metric-form-card">
-                        <h4>Format</h4>
-                        <select id="format-select" name="format"></select>
-                    </div>
-                    <!-- Records Card -->
-                    <div class="metric-card metric-form-card">
-                        <h4>Records</h4>
-                        <input type="range" id="num-records" min="1" max="1000" value="100" step="1">
-                        <span id="num-records-value">100</span>
-                    </div>
-                    <!-- Seed Card -->
-                    <div class="metric-card metric-form-card">
-                        <h4>Seed</h4>
-                        <input type="number" id="seed-input" min="0" max="99999" value="42">
-                        <label style="display:block; margin-top:0.5em;">
-                            <input type="checkbox" id="use-seed"> Use seed
-                        </label>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content:flex-end;">
-                    <button type="button" id="generate-btn">🚀 Generate Data</button>
-                    <button type="button" id="show-raw-btn">📋 Show Raw</button>
-                    <button type="button" id="copy-btn">📄 Copy Data</button>
-                    <button type="button" id="download-btn">⬇️ Download</button>
-                </div>
-            </form>
-            <div id="preview" class="preview" style="display: none;">
-                <h2>📊 Data Preview</h2>
-                <pre id="raw-data" style="display: none;"></pre>
-                <div id="table-container" class="table-container"></div>
-            </div>
-            <div class="footer">
-                <p>© 2025 Chirag Gupta. All rights reserved.</p>
-                <p>Mock Data Generator | Generate realistic fake data for testing and development</p>
-                <p>chirag1706gupta@gmail.com | Jaipur, Rajasthan, India | <a href="https://www.linkedin.com/in/chiraggupta1706/" target="_blank">LinkedIn : Chirag Gupta</a></p>
-            </div>
-        </div>
-    </div>
-    <script src="script.js"></script>
-</body>
 
+  <!-- ── Sidebar ─────────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">⬡</div>
+      <div>
+        <div class="logo-name">MockForge</div>
+        <div class="logo-version">v2.0</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Generate</div>
+      <a class="nav-item active" data-tab="quick" href="#">
+        <span class="nav-icon">⚡</span> Quick Generate
+      </a>
+      <a class="nav-item" data-tab="domain" href="#">
+        <span class="nav-icon">🌐</span> By Domain
+      </a>
+      <a class="nav-item" data-tab="relational" href="#">
+        <span class="nav-icon">🔗</span> Relational Sets
+      </a>
+      <a class="nav-item" data-tab="schema" href="#">
+        <span class="nav-icon">🧩</span> Schema Builder
+      </a>
+
+      <div class="nav-section-label" style="margin-top:24px">Database</div>
+      <a class="nav-item" data-tab="seeder" href="#">
+        <span class="nav-icon">🗄️</span> DB Seeder
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">Built by Chirag Gupta</div>
+      <a href="http://localhost:8000/docs" target="_blank" class="sidebar-docs-link">API Docs ↗</a>
+    </div>
+  </aside>
+
+  <!-- ── Main ───────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-breadcrumb">
+        <span class="breadcrumb-root">MockForge</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current" id="breadcrumbCurrent">Quick Generate</span>
+      </div>
+      <div class="topbar-right">
+        <span class="status-dot"></span>
+        <span class="status-text">API Online</span>
+      </div>
+    </header>
+
+    <!-- ── TAB: Quick Generate ───────────────────────────────────────── -->
+    <section class="tab-content active" id="tab-quick">
+      <div class="page-header">
+        <h1 class="page-title">Quick Generate</h1>
+        <p class="page-subtitle">Pick a topic, format and records count — get data instantly.</p>
+      </div>
+
+      <div class="card-grid two-col">
+        <!-- Topic -->
+        <div class="card">
+          <div class="card-label">Topic</div>
+          <select class="select" id="quickTopic"></select>
+          <div class="field-meta" id="quickTopicDesc"></div>
+          <details class="fields-toggle">
+            <summary>Available fields</summary>
+            <div class="fields-list" id="quickFieldsList"></div>
+          </details>
+        </div>
+
+        <!-- Format -->
+        <div class="card">
+          <div class="card-label">Output Format</div>
+          <div class="format-grid" id="quickFormatGrid"></div>
+        </div>
+
+        <!-- Records -->
+        <div class="card">
+          <div class="card-label">Records <span class="count-badge" id="quickCountBadge">100</span></div>
+          <input type="range" class="slider" id="quickRecords" min="1" max="1000" value="100" />
+          <div class="slider-labels"><span>1</span><span>1000</span></div>
+        </div>
+
+        <!-- Seed -->
+        <div class="card">
+          <div class="card-label">Seed <span class="optional-badge">optional</span></div>
+          <div class="seed-row">
+            <input type="number" class="input" id="quickSeed" placeholder="e.g. 42" />
+            <label class="toggle-label">
+              <input type="checkbox" id="quickUseSeed" />
+              <span class="toggle-track"></span>
+              Use seed
+            </label>
+          </div>
+          <div class="field-meta">Same seed = same data every time. Good for reproducible tests.</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-bar">
+        <button class="btn btn-primary" id="quickGenerateBtn">⚡ Generate</button>
+        <button class="btn btn-ghost" id="quickDownloadBtn">⬇ Download</button>
+        <button class="btn btn-ghost" id="quickCopyBtn">⎘ Copy</button>
+      </div>
+
+      <!-- Preview -->
+      <div class="preview-card" id="quickPreviewCard" style="display:none">
+        <div class="preview-header">
+          <span class="preview-title">Preview</span>
+          <span class="preview-meta" id="quickPreviewMeta"></span>
+          <button class="btn-raw" id="quickRawBtn">Raw</button>
+        </div>
+        <div class="preview-body">
+          <pre class="preview-code" id="quickPreviewCode"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TAB: By Domain ─────────────────────────────────────────────── -->
+    <section class="tab-content" id="tab-domain">
+      <div class="page-header">
+        <h1 class="page-title">By Domain</h1>
+        <p class="page-subtitle">Generate all tables for a real-world domain. Toggle relational mode for FK-linked data.</p>
+      </div>
+
+      <div class="domain-grid" id="domainGrid"></div>
+
+      <div class="card selected-domain-config" id="domainConfig" style="display:none">
+        <div class="domain-config-header">
+          <span class="card-label" id="domainConfigTitle">Configure</span>
+          <label class="toggle-label">
+            <input type="checkbox" id="domainRelational" checked />
+            <span class="toggle-track"></span>
+            Relational mode
+          </label>
+        </div>
+        <div class="domain-tables-preview" id="domainTablesPreview"></div>
+
+        <div class="card-grid two-col" style="margin-top:16px">
+          <div>
+            <div class="card-label">Records per table</div>
+            <input type="range" class="slider" id="domainRecords" min="1" max="1000" value="100" />
+            <div class="slider-labels"><span>1</span><span>1000</span></div>
+            <div class="count-badge" id="domainCountBadge" style="margin-top:6px">100</div>
+          </div>
+          <div>
+            <div class="card-label">Output Format</div>
+            <div class="format-grid" id="domainFormatGrid"></div>
+          </div>
+        </div>
+
+        <div class="action-bar" style="margin-top:16px">
+          <button class="btn btn-primary" id="domainGenerateBtn">⚡ Generate Domain</button>
+          <button class="btn btn-ghost" id="domainDownloadBtn">⬇ Download All</button>
+        </div>
+      </div>
+
+      <div class="multi-preview" id="domainPreview" style="display:none"></div>
+    </section>
+
+    <!-- ── TAB: Relational Sets ───────────────────────────────────────── -->
+    <section class="tab-content" id="tab-relational">
+      <div class="page-header">
+        <h1 class="page-title">Relational Sets</h1>
+        <p class="page-subtitle">Predefined table bundles with FK integrity built-in. Pick one and generate.</p>
+      </div>
+
+      <div class="relational-sets-grid" id="relationalSetsGrid"></div>
+
+      <div class="card" id="relationalConfig" style="display:none; margin-top:20px">
+        <div class="card-label" id="relationalConfigTitle">Configure</div>
+        <div class="relation-graph" id="relationGraph"></div>
+
+        <div class="card-grid two-col" style="margin-top:16px">
+          <div>
+            <div class="card-label">Records per table <span class="count-badge" id="relCountBadge">100</span></div>
+            <input type="range" class="slider" id="relRecords" min="1" max="1000" value="100" />
+            <div class="slider-labels"><span>1</span><span>1000</span></div>
+          </div>
+          <div>
+            <div class="card-label">Format</div>
+            <div class="format-grid" id="relFormatGrid"></div>
+          </div>
+        </div>
+
+        <div class="action-bar" style="margin-top:16px">
+          <button class="btn btn-primary" id="relGenerateBtn">⚡ Generate</button>
+          <button class="btn btn-ghost" id="relDownloadBtn">⬇ Download</button>
+        </div>
+      </div>
+
+      <div class="multi-preview" id="relPreview" style="display:none"></div>
+    </section>
+
+    <!-- ── TAB: Schema Builder ────────────────────────────────────────── -->
+    <section class="tab-content" id="tab-schema">
+      <div class="page-header">
+        <h1 class="page-title">Schema Builder</h1>
+        <p class="page-subtitle">Define your own tables and fields. Link them with foreign keys.</p>
+      </div>
+
+      <div class="schema-builder-layout">
+        <!-- Tables panel -->
+        <div class="schema-tables-panel">
+          <div class="panel-header">
+            <span class="panel-title">Tables</span>
+            <button class="btn btn-sm btn-primary" id="addTableBtn">+ Add Table</button>
+          </div>
+          <div class="schema-tables-list" id="schemaTablesList"></div>
+        </div>
+
+        <!-- Fields panel -->
+        <div class="schema-fields-panel" id="schemaFieldsPanel">
+          <div class="panel-header">
+            <span class="panel-title" id="schemaFieldsPanelTitle">Select a table</span>
+            <button class="btn btn-sm btn-ghost" id="addFieldBtn" style="display:none">+ Add Field</button>
+          </div>
+          <div class="schema-fields-list" id="schemaFieldsList"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px" id="schemaConfigCard">
+        <div class="card-grid two-col">
+          <div>
+            <div class="card-label">Output Format</div>
+            <div class="format-grid" id="schemaFormatGrid"></div>
+          </div>
+          <div>
+            <div class="card-label">Seed <span class="optional-badge">optional</span></div>
+            <input type="number" class="input" id="schemaSeed" placeholder="e.g. 42" />
+          </div>
+        </div>
+        <div class="action-bar" style="margin-top:16px">
+          <button class="btn btn-primary" id="schemaGenerateBtn">⚡ Generate Schema</button>
+          <button class="btn btn-ghost" id="schemaDownloadBtn">⬇ Download</button>
+        </div>
+      </div>
+
+      <div class="multi-preview" id="schemaPreview" style="display:none"></div>
+    </section>
+
+    <!-- ── TAB: DB Seeder ─────────────────────────────────────────────── -->
+    <section class="tab-content" id="tab-seeder">
+      <div class="page-header">
+        <h1 class="page-title">DB Seeder</h1>
+        <p class="page-subtitle">Generate data and seed it directly into your database.</p>
+      </div>
+
+      <!-- Warning banner -->
+      <div class="warning-banner">
+        <span class="warning-icon">⚠️</span>
+        <div>
+          <strong>Dev / UAT environments only.</strong>
+          Your credentials are used only during this request and are never stored or logged.
+          Do not use production databases.
+        </div>
+      </div>
+
+      <div class="card-grid two-col">
+        <!-- Connection -->
+        <div class="card span-2">
+          <div class="card-label">Database Connection</div>
+          <div class="card-grid two-col">
+            <div>
+              <label class="input-label">Dialect</label>
+              <select class="select" id="dbDialect">
+                <option value="postgresql">PostgreSQL</option>
+                <option value="mysql">MySQL</option>
+                <option value="sqlite">SQLite</option>
+                <option value="mssql">MSSQL</option>
+              </select>
+            </div>
+            <div>
+              <label class="input-label">Host</label>
+              <input type="text" class="input" id="dbHost" placeholder="localhost" />
+            </div>
+            <div>
+              <label class="input-label">Port</label>
+              <input type="number" class="input" id="dbPort" placeholder="5432" />
+            </div>
+            <div>
+              <label class="input-label">Database</label>
+              <input type="text" class="input" id="dbName" placeholder="mydb_dev" />
+            </div>
+            <div>
+              <label class="input-label">Username</label>
+              <input type="text" class="input" id="dbUser" placeholder="postgres" />
+            </div>
+            <div>
+              <label class="input-label">Password</label>
+              <input type="password" class="input" id="dbPass" placeholder="••••••••" />
+            </div>
+          </div>
+          <div class="seed-row" style="margin-top:12px">
+            <label class="toggle-label">
+              <input type="checkbox" id="dbSSL" />
+              <span class="toggle-track"></span>
+              Use SSL
+            </label>
+            <button class="btn btn-ghost btn-sm" id="dbTestBtn">🔌 Test Connection</button>
+            <span class="connection-status" id="dbTestStatus"></span>
+          </div>
+        </div>
+
+        <!-- Seed mode -->
+        <div class="card span-2">
+          <div class="card-label">Seed Mode</div>
+          <div class="seed-mode-tabs">
+            <button class="seed-mode-tab active" data-mode="domain">By Domain</button>
+            <button class="seed-mode-tab" data-mode="relset">Relational Set</button>
+          </div>
+
+          <div id="seedModeDomain">
+            <div class="card-label" style="margin-top:12px">Select Domain</div>
+            <select class="select" id="seedDomain"></select>
+            <label class="toggle-label" style="margin-top:10px">
+              <input type="checkbox" id="seedRelational" checked />
+              <span class="toggle-track"></span>
+              Relational mode
+            </label>
+          </div>
+
+          <div id="seedModeRelset" style="display:none">
+            <div class="card-label" style="margin-top:12px">Select Relational Set</div>
+            <select class="select" id="seedRelSet"></select>
+          </div>
+
+          <div class="card-grid two-col" style="margin-top:16px">
+            <div>
+              <label class="input-label">Records per table</label>
+              <input type="number" class="input" id="seedRecords" value="100" min="1" max="1000" />
+            </div>
+            <div>
+              <label class="input-label">Batch size</label>
+              <input type="number" class="input" id="seedBatchSize" value="500" min="100" max="1000" />
+            </div>
+          </div>
+
+          <label class="toggle-label" style="margin-top:12px">
+            <input type="checkbox" id="seedTruncate" />
+            <span class="toggle-track"></span>
+            Truncate tables before seeding
+          </label>
+
+          <div class="action-bar" style="margin-top:16px">
+            <button class="btn btn-primary" id="seedBtn">🗄️ Seed Database</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seed result -->
+      <div class="seed-result" id="seedResult" style="display:none"></div>
+    </section>
+
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
 </html>
