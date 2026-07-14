@@ -1,166 +1,184 @@
-# Mock Data Generator 🎲
+# ⬡ MockForge
 
-A powerful web application to generate realistic fake data in multiple formats for testing and development purposes.
+**Realistic mock data generator for developers and QA engineers.**  
+Generate structured, relational, domain-aware fake data — preview it, download it, or seed it directly into your database.
 
-## 📸 Application Overview
+---
 
-### Main Interface
-![Main Interface](screenshots/Main-Interface.png)
+## What it does
 
-## 🚀 Features
+MockForge lets you generate production-quality mock data without writing a single line of code.
 
-- **12 Predefined Topics**: Users, Products, Orders, Employees, Financial, Healthcare, Education, Real Estate, Social Media, IoT Sensors, Logistics, Banking
-- **Custom Topic Support**: Define your own fields and generate custom data
-- **Output Formats**: JSON, XML, CSV, YAML, Parquet, TSV
-- **Up to 1000 Records**: Generate large datasets for testing
-- **Download & Copy**: Easy data export options
-- **Reproducible Data**: Use seeds for consistent data generation
-- **Real-time Preview**: See your data before downloading
+- **Quick Generate** — Pick a topic, format, and record count. Get data instantly.
+- **By Domain** — Generate all tables for a real-world domain (e-commerce, HR, healthcare, and more) with a single click.
+- **Relational Sets** — Predefined table bundles with foreign key integrity built-in. Orders always link to real customers. Appointments always link to real doctors.
+- **Schema Builder** — Define your own tables and fields from scratch. Link them with foreign keys. Generate data that matches your exact schema.
+- **DB Seeder** — Connect to your dev or UAT database and seed data directly. No CSV import needed.
 
-## 🛠️ Tech Stack
+---
 
-- **Backend**: FastAPI (Python)
-- **Frontend**: Streamlit
-- **Data Generation**: Faker library
-- **Data Processing**: Pandas
-- **Format Support**: Multiple specialized libraries
+## Domains
 
-## 🚀 Quick Start
+| Domain | Tables |
+|---|---|
+| E-commerce | customers, products, categories, orders, order_items, reviews |
+| HR | departments, employees, payroll, leave_requests |
+| Healthcare | doctors, patients, appointments, prescriptions |
+| Education | courses, students, enrollments, grades |
+| Banking | bank_customers, accounts, transactions, loans |
+| Logistics | warehouses, drivers, shipments, deliveries |
+| Real Estate | agents, properties, buyers, property_transactions |
+| IoT | devices, sensor_readings, alerts |
+| Social Media | sm_users, posts, comments, likes |
+| Aviation | pilots, aircraft, flights, pilot_log_book |
+| Weather | weather_stations, observations, forecasts |
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd mock-data-generator
-   ```
+---
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Output Formats
 
-3. **Run the application**
-   ```bash
-   python run.py
-   ```
-   
-## 📋 Available Topics
+`JSON` `CSV` `TSV` `YAML` `XML` `Parquet`
 
-### Core Business Data
-| Topic | Description | Sample Fields |
-|-------|-------------|---------------|
-| **Citizen** | Personal information, contact details | name, email, phone, address |
-| **Products** | E-commerce product data | title, price, category, description |
-| **Orders** | Transaction and order data | order_id, amount, status, date |
-| **Employees** | HR and employee records | employee_id, department, salary, hire_date |
+Multi-table exports (domain, relational sets, schema) are packaged as a ZIP archive when using CSV, TSV, or Parquet.
 
-### Specialized Data
-| Topic | Description | Sample Fields |
-|-------|-------------|---------------|
-| **Financial** | Banking and transaction data | account_number, balance, transaction_type |
-| **Healthcare** | Patient and medical records | patient_id, diagnosis, treatment, date |
-| **Education** | Student and course data | student_id, course, grade, semester |
-| **Real Estate** | Property listings | address, price, bedrooms, area |
-| **Social Media** | Posts and interactions | post_id, content, likes, shares |
-| **IoT Sensors** | Sensor readings and data | sensor_id, temperature, humidity, timestamp |
-| **Logistics** | Shipping and delivery data | tracking_number, status, origin, destination |
-| **Banking** | Account and transaction data | account_type, balance, interest_rate |
+---
 
-## 🎛️ API Endpoints
+## Database Seeding
 
-| Method | Endpoint | Description | Response |
-|--------|----------|-------------|----------|
-| `GET` | `/` | Health check | Status message |
-| `GET` | `/topics` | Get available topics | List of topics |
-| `GET` | `/formats` | Get supported formats | List of formats |
-| `POST` | `/generate` | Generate mock data | Generated data |
-| `POST` | `/download` | Download generated data | File download |
+MockForge can seed data directly into your database.
 
-## 🔧 Usage Examples
+**Supported databases:** PostgreSQL · MySQL · SQLite · MSSQL
 
-### Generate User Data (JSON)
-```python
-import requests
+> ⚠️ Only connect dev or UAT databases. MockForge does not store, log, or persist your credentials. They are used only during the request and discarded immediately after.
 
-payload = {
-    "topic": "users",
-    "format": "JSON",
-    "num_records": 100,
-    "seed": 42
-}
+---
 
-response = requests.post("http://localhost:8000/generate", json=payload)
-data = response.json()
-```
+## Tech Stack
 
-### Custom Topic Generation
-```python
-payload = {
-    "topic": "custom",
-    "format": "CSV",
-    "num_records": 50,
-    "custom_fields": ["product_name", "price", "category", "in_stock"]
-}
+| Layer | Tech |
+|---|---|
+| Backend | Python 3.10+, FastAPI, Pydantic v2 |
+| Data Generation | Faker, Pandas |
+| Database Seeding | SQLAlchemy, psycopg2, PyMySQL |
+| Formats | PyYAML, PyArrow (Parquet), lxml |
+| Frontend | Vanilla HTML, CSS, JavaScript |
+| Runner | Uvicorn |
 
-response = requests.post("http://localhost:8000/generate", json=payload)
-```
+---
 
-### Using cURL
+## Getting Started
+
+### 1. Clone the repo
+
 ```bash
-curl -X POST "http://localhost:8000/generate" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "topic": "products",
-       "format": "JSON",
-       "num_records": 10,
-       "seed": 123
-     }'
+git clone https://github.com/YOUR_USERNAME/MockForge.git
+cd MockForge
 ```
 
-## 🌟 Key Features
+### 2. Install dependencies
 
-### Multiple Format Support
-Export your generated data in 15 different formats to meet various integration needs - from simple CSV files to advanced formats like Parquet and HDF5.
+```bash
+pip install -r requirements.txt
+```
 
-### Seed-based Generation
-Ensure reproducible data generation across environments by using the same seed value. Perfect for testing scenarios where consistent data is required.
+### 3. Run
 
-### Real-time Preview
-See your generated data immediately in the web interface before deciding to download or copy it.
+```bash
+python run.py
+```
 
-### Custom Field Support
-Not finding the right predefined topic? Create your own custom data schema by specifying field names and let the system generate appropriate data.
+This starts both the backend API and the frontend server.
 
-## 🙏 Acknowledgments
+| Service | URL |
+|---|---|
+| Frontend UI | http://localhost:8080 |
+| Backend API | http://localhost:8000 |
+| API Docs (Swagger) | http://localhost:8000/docs |
+| API Docs (Redoc) | http://localhost:8000/redoc |
 
-- [Faker](https://faker.readthedocs.io/) - For realistic fake data generation
-- [FastAPI](https://fastapi.tiangolo.com/) - For the robust API framework
-- [HTML, CSS, JavaScript](https://www.w3schools.com/) - For the intuitive frontend interface
+---
+
+## Project Structure
+
+```
+MockForge/
+├── backend/
+│   ├── main.py                  # FastAPI app + all endpoints
+│   ├── models/
+│   │   └── schemas.py           # Pydantic request/response models
+│   ├── services/
+│   │   ├── data_generator.py    # Core generation engine
+│   │   ├── format_converter.py  # JSON, CSV, YAML, XML, Parquet conversion
+│   │   └── db_seeder.py         # Database seeding via SQLAlchemy
+│   └── utils/
+│       ├── constants.py         # Domain definitions, table schemas, relational sets
+│       └── validator.py         # Schema validation + content safety
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+├── run.py                       # One-command startup
+└── requirements.txt
+```
+
+---
+
+## API Reference
+
+### Core Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/topics` | List all available topics |
+| GET | `/domains` | List all domains with table info |
+| GET | `/relational-sets` | List predefined relational bundles |
+| GET | `/field-types` | List allowed field types for schema builder |
+| GET | `/formats` | List supported output formats |
+
+### Generate (returns data in response)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/generate` | Single topic (backward-compatible) |
+| POST | `/generate/domain` | All tables for a domain |
+| POST | `/generate/relational-set` | Predefined relational bundle |
+| POST | `/generate/schema` | User-defined schema |
+
+### Download (returns file)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/download` | Single topic file download |
+| POST | `/download/domain` | Domain data as file/ZIP |
+| POST | `/download/relational-set` | Relational set as file/ZIP |
+| POST | `/download/schema` | Schema-driven data as file/ZIP |
+
+### Database Seeding
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/db/test` | Test database connectivity |
+| POST | `/db/seed/schema` | Seed from user-defined schema |
+| POST | `/db/seed/domain` | Seed from domain |
+| POST | `/db/seed/relational-set` | Seed from predefined relational set |
+
+Full interactive docs available at `/docs` when the server is running.
+
+---
+
+## Content Safety
+
+MockForge includes a validation layer that blocks explicit, harmful, or sensitive field names and table names before any data is generated. Schema-driven generation uses a strict field type whitelist — free-form text fields are not supported by design.
+
+---
 
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).  
-© 2025 Chirag Gupta. Please credit if reused.
+MIT — see [LICENSE](LICENSE)
 
-```
-MockDataGenerator
-├─ backend
-│  ├─ main.py
-│  ├─ models
-│  │  └─ schemas.py
-│  ├─ services
-│  │  ├─ data_generator.py
-│  │  └─ format_converter.py
-│  └─ utils
-│     └─ constants.py
-├─ frontend
-│  ├─ index.html
-│  ├─ script.js
-│  └─ style.css
-├─ LICENSE
-├─ README.md
-├─ requirements.txt
-├─ run.py
-└─ screenshots
-   └─ Main-Interface.png
+---
 
-```
+## Author
+
+**Chirag Gupta**  
+[LinkedIn](https://linkedin.com/in/chirag1706gupta) · chirag1706gupta@gmail.com · Jaipur, Rajasthan, India
