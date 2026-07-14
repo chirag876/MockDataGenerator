@@ -3,27 +3,27 @@ const API = "http://localhost:8000";
 
 /* ── State ────────────────────────────────────────────────────────────── */
 const state = {
-  topics:        {},   // { name: { description, fields } }
-  formats:       [],
-  domains:       [],
-  relSets:       [],
-  fieldTypes:    [],
+  topics: {},   // { name: { description, fields } }
+  formats: [],
+  domains: [],
+  relSets: [],
+  fieldTypes: [],
 
   // Quick
-  quickFormat:   "JSON",
+  quickFormat: "JSON",
 
   // Domain
   selectedDomain: null,
-  domainFormat:   "JSON",
+  domainFormat: "JSON",
 
   // Relational
   selectedRelSet: null,
-  relFormat:      "JSON",
+  relFormat: "JSON",
 
   // Schema builder
-  schemaTables:      [],   // [{ name, fields:[{name,type,constraints,references_table,references_field}], num_records }]
+  schemaTables: [],   // [{ name, fields:[{name,type,constraints,references_table,references_field}], num_records }]
   activeSchemaTable: null,
-  schemaFormat:      "JSON",
+  schemaFormat: "JSON",
 
   // DB Seeder
   seedMode: "domain",
@@ -35,13 +35,13 @@ function $(id) { return document.getElementById(id); }
 function showToast(msg, type = "info") {
   const t = $("toast");
   t.textContent = msg;
-  t.className   = `toast show ${type}`;
+  t.className = `toast show ${type}`;
   setTimeout(() => { t.className = "toast"; }, 3000);
 }
 
 function setLoading(btn, on) {
   if (on) btn.classList.add("loading");
-  else    btn.classList.remove("loading");
+  else btn.classList.remove("loading");
 }
 
 async function apiFetch(path, options = {}) {
@@ -61,7 +61,7 @@ async function apiFetch(path, options = {}) {
 }
 
 function formatBytes(bytes) {
-  if (bytes < 1024)       return `${bytes} B`;
+  if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `(${(bytes / 1024).toFixed(1)} KB)`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
@@ -71,7 +71,7 @@ function buildFormatGrid(containerId, stateKey) {
   container.innerHTML = "";
   state.formats.forEach(f => {
     const btn = document.createElement("button");
-    btn.className  = `format-btn${state[stateKey] === f ? " active" : ""}`;
+    btn.className = `format-btn${state[stateKey] === f ? " active" : ""}`;
     btn.textContent = f;
     btn.onclick = () => {
       state[stateKey] = f;
@@ -105,11 +105,11 @@ function renderMultiPreview(containerId, tablesData) {
 
 /* ── Sidebar navigation ───────────────────────────────────────────────── */
 const TAB_LABELS = {
-  quick:      "Quick Generate",
-  domain:     "By Domain",
+  quick: "Quick Generate",
+  domain: "By Domain",
   relational: "Relational Sets",
-  schema:     "Schema Builder",
-  seeder:     "DB Seeder",
+  schema: "Schema Builder",
+  seeder: "DB Seeder",
 };
 
 document.querySelectorAll(".nav-item").forEach(item => {
@@ -128,26 +128,26 @@ document.querySelectorAll(".nav-item").forEach(item => {
 async function bootstrap() {
   try {
     // Topics
-    const topicsRes  = await apiFetch("/topics");
+    const topicsRes = await apiFetch("/topics");
     const topicsData = await topicsRes.json();
     topicsData.forEach(t => { state.topics[t.name] = t; });
 
     // Formats
-    const fmtRes  = await apiFetch("/formats");
+    const fmtRes = await apiFetch("/formats");
     const fmtData = await fmtRes.json();
     state.formats = fmtData.formats;
 
     // Domains
-    const domRes  = await apiFetch("/domains");
+    const domRes = await apiFetch("/domains");
     state.domains = await domRes.json();
 
     // Relational sets
-    const relRes  = await apiFetch("/relational-sets");
+    const relRes = await apiFetch("/relational-sets");
     state.relSets = await relRes.json();
 
     // Field types (for schema builder)
-    const ftRes       = await apiFetch("/field-types");
-    state.fieldTypes  = await ftRes.json();
+    const ftRes = await apiFetch("/field-types");
+    state.fieldTypes = await ftRes.json();
 
     // Init all tabs
     initQuickTab();
@@ -170,32 +170,73 @@ function initQuickTab() {
   const sel = $("quickTopic");
   Object.keys(state.topics).forEach(name => {
     const opt = document.createElement("option");
-    opt.value       = name;
+    opt.value = name;
     opt.textContent = name.replace(/_/g, " ");
     sel.appendChild(opt);
   });
 
   updateQuickTopicMeta();
   sel.addEventListener("change", updateQuickTopicMeta);
-
   // Format grid
   buildFormatGrid("quickFormatGrid", "quickFormat");
 
   // Records slider
-  $("quickRecords").addEventListener("input", e => {
-    $("quickCountBadge").textContent = e.target.value;
+  const recordInput = $("quickRecords");
+  const presetButtons = document.querySelectorAll(".record-presets .record-btn");
+
+  presetButtons.forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+      const value = btn.dataset.value;
+
+      recordInput.value = value;
+
+      presetButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+    });
+
+  });
+
+  recordInput.addEventListener("input", () => {
+
+    recordInput.value = recordInput.value.replace(/\D/g, "");
+
+    if (recordInput.value !== "") {
+
+      let value = parseInt(recordInput.value);
+
+      if (value > 1000)
+        value = 1000;
+
+      if (value < 1)
+        value = 1;
+
+      recordInput.value = value;
+    }
+
+    presetButtons.forEach(btn => {
+
+      btn.classList.toggle(
+        "active",
+        btn.dataset.value === recordInput.value
+      );
+
+    });
+
   });
 
   // Buttons
   $("quickGenerateBtn").addEventListener("click", quickGenerate);
   $("quickDownloadBtn").addEventListener("click", quickDownload);
   $("quickCopyBtn").addEventListener("click", quickCopy);
-  $("quickRawBtn").addEventListener("click",  quickToggleRaw);
+  $("quickRawBtn").addEventListener("click", quickToggleRaw);
 }
 
 function updateQuickTopicMeta() {
-  const name   = $("quickTopic").value;
-  const topic  = state.topics[name];
+  const name = $("quickTopic").value;
+  const topic = state.topics[name];
   if (!topic) return;
 
   $("quickTopicDesc").textContent = topic.description;
@@ -204,7 +245,7 @@ function updateQuickTopicMeta() {
   list.innerHTML = "";
   (topic.fields || []).forEach(f => {
     const tag = document.createElement("span");
-    tag.className   = "field-tag";
+    tag.className = "field-tag";
     tag.textContent = f;
     list.appendChild(tag);
   });
@@ -215,28 +256,28 @@ async function quickGenerate() {
   setLoading(btn, true);
   try {
     const body = {
-      topic:       $("quickTopic").value,
-      format:      state.quickFormat,
+      topic: $("quickTopic").value,
+      format: state.quickFormat,
       num_records: parseInt($("quickRecords").value),
-      seed:        $("quickUseSeed").checked ? parseInt($("quickSeed").value) || null : null,
+      seed: $("quickUseSeed").checked ? parseInt($("quickSeed").value) || null : null,
     };
 
-    const res  = await apiFetch("/generate", { method: "POST", body: JSON.stringify(body) });
+    const res = await apiFetch("/generate", { method: "POST", body: JSON.stringify(body) });
     const data = await res.json();
 
     if (!data.success) throw new Error(data.error || "Generation failed");
 
     // Show preview
     const preview = $("quickPreviewCard");
-    const code    = $("quickPreviewCode");
+    const code = $("quickPreviewCode");
     preview.style.display = "block";
-    preview.dataset.raw   = data.data;
+    preview.dataset.raw = data.data;
     preview.dataset.rawMode = "false";
 
     // For JSON try to parse and show pretty; others show raw
     let display = data.data;
     if (state.quickFormat === "JSON") {
-      try { display = JSON.stringify(JSON.parse(data.data), null, 2); } catch {}
+      try { display = JSON.stringify(JSON.parse(data.data), null, 2); } catch { }
     }
     code.textContent = display.length > 8000 ? display.slice(0, 8000) + "\n... (truncated for preview)" : display;
 
@@ -256,14 +297,14 @@ async function quickDownload() {
   setLoading(btn, true);
   try {
     const body = {
-      topic:       $("quickTopic").value,
-      format:      state.quickFormat,
+      topic: $("quickTopic").value,
+      format: state.quickFormat,
       num_records: parseInt($("quickRecords").value),
-      seed:        $("quickUseSeed").checked ? parseInt($("quickSeed").value) || null : null,
+      seed: $("quickUseSeed").checked ? parseInt($("quickSeed").value) || null : null,
     };
 
-    const res      = await apiFetch("/download", { method: "POST", body: JSON.stringify(body) });
-    const blob     = await res.blob();
+    const res = await apiFetch("/download", { method: "POST", body: JSON.stringify(body) });
+    const blob = await res.blob();
     const filename = res.headers.get("Content-Disposition")?.match(/filename=(.+)/)?.[1] || "data.json";
     triggerDownload(blob, filename);
     showToast("Download started!", "success");
@@ -282,14 +323,14 @@ function quickCopy() {
 
 function quickToggleRaw() {
   const preview = $("quickPreviewCard");
-  const code    = $("quickPreviewCode");
-  const raw     = preview.dataset.raw || "";
-  const isRaw   = preview.dataset.rawMode === "true";
+  const code = $("quickPreviewCode");
+  const raw = preview.dataset.raw || "";
+  const isRaw = preview.dataset.rawMode === "true";
 
   if (isRaw) {
     let display = raw;
     if (state.quickFormat === "JSON") {
-      try { display = JSON.stringify(JSON.parse(raw), null, 2); } catch {}
+      try { display = JSON.stringify(JSON.parse(raw), null, 2); } catch { }
     }
     code.textContent = display;
     preview.dataset.rawMode = "false";
@@ -305,17 +346,17 @@ function quickToggleRaw() {
    TAB 2 — By Domain
 ═══════════════════════════════════════════════════════════════════════ */
 const DOMAIN_ICONS = {
-  ecommerce:    "🛒",
-  hr:           "👥",
-  healthcare:   "🏥",
-  education:    "🎓",
-  banking:      "🏦",
-  logistics:    "🚚",
-  real_estate:  "🏠",
-  iot:          "📡",
+  ecommerce: "🛒",
+  hr: "👥",
+  healthcare: "🏥",
+  education: "🎓",
+  banking: "🏦",
+  logistics: "🚚",
+  real_estate: "🏠",
+  iot: "📡",
   social_media: "📱",
-  aviation:     "✈️",
-  weather:      "🌤️",
+  aviation: "✈️",
+  weather: "🌤️",
 };
 
 function initDomainTab() {
@@ -361,7 +402,7 @@ function selectDomain(domain, card) {
   preview.innerHTML = "";
   domain.tables.forEach(t => {
     const tag = document.createElement("span");
-    tag.className   = "domain-table-tag";
+    tag.className = "domain-table-tag";
     tag.textContent = t;
     preview.appendChild(tag);
   });
@@ -376,13 +417,13 @@ async function domainGenerate() {
   setLoading(btn, true);
   try {
     const body = {
-      domain:      state.selectedDomain.name,
-      relational:  $("domainRelational").checked,
-      format:      state.domainFormat,
+      domain: state.selectedDomain.name,
+      relational: $("domainRelational").checked,
+      format: state.domainFormat,
       num_records: parseInt($("domainRecords").value),
     };
 
-    const res  = await apiFetch("/generate/domain", { method: "POST", body: JSON.stringify(body) });
+    const res = await apiFetch("/generate/domain", { method: "POST", body: JSON.stringify(body) });
     const data = await res.json();
 
     if (!data.success) throw new Error(data.error || "Generation failed");
@@ -408,16 +449,16 @@ async function domainDownload() {
   setLoading(btn, true);
   try {
     const body = {
-      domain:      state.selectedDomain.name,
-      relational:  $("domainRelational").checked,
-      format:      state.domainFormat,
+      domain: state.selectedDomain.name,
+      relational: $("domainRelational").checked,
+      format: state.domainFormat,
       num_records: parseInt($("domainRecords").value),
     };
 
-    const res      = await apiFetch("/download/domain", { method: "POST", body: JSON.stringify(body) });
-    const blob     = await res.blob();
+    const res = await apiFetch("/download/domain", { method: "POST", body: JSON.stringify(body) });
+    const blob = await res.blob();
     const filename = res.headers.get("Content-Disposition")?.match(/filename=(.+)/)?.[1]
-                   || `${state.selectedDomain.name}_data.zip`;
+      || `${state.selectedDomain.name}_data.zip`;
     triggerDownload(blob, filename);
     showToast("Download started!", "success");
   } catch (err) {
@@ -477,23 +518,23 @@ function selectRelSet(rs, card) {
 
     if (i > 0) {
       const sep = document.createElement("span");
-      sep.className   = "rel-arrow";
+      sep.className = "rel-arrow";
       sep.textContent = "·";
       graph.appendChild(sep);
     }
 
     const parent = document.createElement("span");
-    parent.className   = "rel-table";
+    parent.className = "rel-table";
     parent.textContent = rel.parent;
     graph.appendChild(parent);
 
     const arrow = document.createElement("span");
-    arrow.className   = "rel-arrow";
+    arrow.className = "rel-arrow";
     arrow.textContent = "→";
     graph.appendChild(arrow);
 
     const child = document.createElement("span");
-    child.className   = "rel-table";
+    child.className = "rel-table";
     child.textContent = rel.child;
     graph.appendChild(child);
   });
@@ -509,11 +550,11 @@ async function relGenerate() {
   try {
     const body = {
       predefined_set: state.selectedRelSet.name,
-      format:         state.relFormat,
-      num_records:    parseInt($("relRecords").value),
+      format: state.relFormat,
+      num_records: parseInt($("relRecords").value),
     };
 
-    const res  = await apiFetch("/generate/relational-set", { method: "POST", body: JSON.stringify(body) });
+    const res = await apiFetch("/generate/relational-set", { method: "POST", body: JSON.stringify(body) });
     const data = await res.json();
 
     if (!data.success) throw new Error(data.error || "Generation failed");
@@ -539,14 +580,14 @@ async function relDownload() {
   try {
     const body = {
       predefined_set: state.selectedRelSet.name,
-      format:         state.relFormat,
-      num_records:    parseInt($("relRecords").value),
+      format: state.relFormat,
+      num_records: parseInt($("relRecords").value),
     };
 
-    const res      = await apiFetch("/download/relational-set", { method: "POST", body: JSON.stringify(body) });
-    const blob     = await res.blob();
+    const res = await apiFetch("/download/relational-set", { method: "POST", body: JSON.stringify(body) });
+    const blob = await res.blob();
     const filename = res.headers.get("Content-Disposition")?.match(/filename=(.+)/)?.[1]
-                   || `${state.selectedRelSet.name}.zip`;
+      || `${state.selectedRelSet.name}.zip`;
     triggerDownload(blob, filename);
     showToast("Download started!", "success");
   } catch (err) {
@@ -605,9 +646,9 @@ function renderSchemaTables() {
 
 function renderSchemaFields() {
   const panel = $("schemaFieldsPanel");
-  const list  = $("schemaFieldsList");
+  const list = $("schemaFieldsList");
   const addBtn = $("addFieldBtn");
-  const title  = $("schemaFieldsPanelTitle");
+  const title = $("schemaFieldsPanelTitle");
 
   if (state.activeSchemaTable === null || !state.schemaTables[state.activeSchemaTable]) {
     title.textContent = "Select a table";
@@ -617,7 +658,7 @@ function renderSchemaFields() {
   }
 
   const table = state.schemaTables[state.activeSchemaTable];
-  title.textContent  = table.name;
+  title.textContent = table.name;
   addBtn.style.display = "inline-flex";
   list.innerHTML = "";
 
@@ -668,7 +709,7 @@ function showAddTableModal() {
       <input type="number" class="input" id="modalTableRecords" value="100" min="1" max="1000" />
     </div>
   `, () => {
-    const name    = $("modalTableName").value.trim();
+    const name = $("modalTableName").value.trim();
     const records = parseInt($("modalTableRecords").value) || 100;
     if (!name) { showToast("Table name is required.", "error"); return false; }
     if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) { showToast("Invalid table name.", "error"); return false; }
@@ -725,8 +766,8 @@ function showAddFieldModal() {
       </div>
     </div>
   `, () => {
-    const name  = $("modalFieldName").value.trim();
-    const type  = $("modalFieldType").value;
+    const name = $("modalFieldName").value.trim();
+    const type = $("modalFieldType").value;
     if (!name) { showToast("Field name is required.", "error"); return false; }
 
     const field = { name, type, constraints: null, references_table: null, references_field: null };
@@ -756,8 +797,8 @@ function showAddFieldModal() {
   setTimeout(() => overlay.classList.add("show"), 10);
 
   $("modalFieldType").addEventListener("change", e => {
-    $("fkConfig").style.display   = e.target.value === "foreign_key" ? "block" : "none";
-    $("enumConfig").style.display = e.target.value === "enum_pick"   ? "block" : "none";
+    $("fkConfig").style.display = e.target.value === "foreign_key" ? "block" : "none";
+    $("enumConfig").style.display = e.target.value === "enum_pick" ? "block" : "none";
   });
   $("modalFieldName").focus();
 }
@@ -797,15 +838,15 @@ async function schemaGenerate() {
   try {
     const body = {
       tables: state.schemaTables.map(t => ({
-        name:        t.name,
-        fields:      t.fields,
+        name: t.name,
+        fields: t.fields,
         num_records: t.num_records || 100,
       })),
       format: state.schemaFormat,
-      seed:   parseInt($("schemaSeed").value) || null,
+      seed: parseInt($("schemaSeed").value) || null,
     };
 
-    const res  = await apiFetch("/generate/schema", { method: "POST", body: JSON.stringify(body) });
+    const res = await apiFetch("/generate/schema", { method: "POST", body: JSON.stringify(body) });
     const data = await res.json();
     if (!data.success) throw new Error(data.error || "Generation failed");
 
@@ -830,16 +871,16 @@ async function schemaDownload() {
   try {
     const body = {
       tables: state.schemaTables.map(t => ({
-        name:        t.name,
-        fields:      t.fields,
+        name: t.name,
+        fields: t.fields,
         num_records: t.num_records || 100,
       })),
       format: state.schemaFormat,
-      seed:   parseInt($("schemaSeed").value) || null,
+      seed: parseInt($("schemaSeed").value) || null,
     };
 
-    const res      = await apiFetch("/download/schema", { method: "POST", body: JSON.stringify(body) });
-    const blob     = await res.blob();
+    const res = await apiFetch("/download/schema", { method: "POST", body: JSON.stringify(body) });
+    const blob = await res.blob();
     const filename = res.headers.get("Content-Disposition")?.match(/filename=(.+)/)?.[1] || "schema_export.zip";
     triggerDownload(blob, filename);
     showToast("Download started!", "success");
@@ -855,9 +896,9 @@ async function schemaDownload() {
 ═══════════════════════════════════════════════════════════════════════ */
 const DEFAULT_PORTS = {
   postgresql: 5432,
-  mysql:      3306,
-  sqlite:     "",
-  mssql:      1433,
+  mysql: 3306,
+  sqlite: "",
+  mssql: 1433,
 };
 
 function initSeederTab() {
@@ -865,7 +906,7 @@ function initSeederTab() {
   const domSel = $("seedDomain");
   state.domains.forEach(d => {
     const opt = document.createElement("option");
-    opt.value       = d.name;
+    opt.value = d.name;
     opt.textContent = d.name.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
     domSel.appendChild(opt);
   });
@@ -874,7 +915,7 @@ function initSeederTab() {
   const relSel = $("seedRelSet");
   state.relSets.forEach(rs => {
     const opt = document.createElement("option");
-    opt.value       = rs.name;
+    opt.value = rs.name;
     opt.textContent = rs.name;
     relSel.appendChild(opt);
   });
@@ -897,38 +938,38 @@ function initSeederTab() {
   });
 
   $("dbTestBtn").addEventListener("click", testConnection);
-  $("seedBtn").addEventListener("click",   seedDatabase);
+  $("seedBtn").addEventListener("click", seedDatabase);
 }
 
 function getConnectionConfig() {
   return {
-    dialect:  $("dbDialect").value,
-    host:     $("dbHost").value.trim(),
-    port:     parseInt($("dbPort").value) || 5432,
+    dialect: $("dbDialect").value,
+    host: $("dbHost").value.trim(),
+    port: parseInt($("dbPort").value) || 5432,
     database: $("dbName").value.trim(),
     username: $("dbUser").value.trim(),
     password: $("dbPass").value,
-    ssl:      $("dbSSL").checked,
+    ssl: $("dbSSL").checked,
   };
 }
 
 async function testConnection() {
-  const btn    = $("dbTestBtn");
+  const btn = $("dbTestBtn");
   const status = $("dbTestStatus");
   setLoading(btn, true);
   status.textContent = "Testing...";
-  status.className   = "connection-status";
+  status.className = "connection-status";
   try {
     const body = { connection: getConnectionConfig() };
-    const res  = await apiFetch("/db/test", { method: "POST", body: JSON.stringify(body) });
+    const res = await apiFetch("/db/test", { method: "POST", body: JSON.stringify(body) });
     const data = await res.json();
 
     status.textContent = `✓ ${data.message}`;
-    status.className   = "connection-status ok";
+    status.className = "connection-status ok";
     showToast("Connection successful!", "success");
   } catch (err) {
     status.textContent = `✗ ${err.message.slice(0, 60)}`;
-    status.className   = "connection-status fail";
+    status.className = "connection-status fail";
     showToast("Connection failed.", "error");
   } finally {
     setLoading(btn, false);
@@ -942,10 +983,10 @@ async function seedDatabase() {
   result.style.display = "none";
 
   try {
-    const connection    = getConnectionConfig();
-    const num_records   = parseInt($("seedRecords").value)   || 100;
-    const batch_size    = parseInt($("seedBatchSize").value)  || 500;
-    const truncate_first= $("seedTruncate").checked;
+    const connection = getConnectionConfig();
+    const num_records = parseInt($("seedRecords").value) || 100;
+    const batch_size = parseInt($("seedBatchSize").value) || 500;
+    const truncate_first = $("seedTruncate").checked;
 
     let endpoint, body;
 
@@ -957,7 +998,7 @@ async function seedDatabase() {
       body = JSON.stringify({ connection });
     }
 
-    const res  = await apiFetch(endpoint, { method: "POST", body });
+    const res = await apiFetch(endpoint, { method: "POST", body });
     const data = await res.json();
 
     result.style.display = "block";
@@ -967,8 +1008,8 @@ async function seedDatabase() {
         <div class="seed-result-title">✓ Seeding Complete</div>
         <div class="seed-result-rows">
           ${Object.entries(data.rows_inserted).map(([t, n]) =>
-            `<div class="seed-result-row"><span>${t}</span><span>${n} rows inserted</span></div>`
-          ).join("")}
+        `<div class="seed-result-row"><span>${t}</span><span>${n} rows inserted</span></div>`
+      ).join("")}
           ${data.warning ? `<div style="margin-top:10px;font-size:12px;color:var(--amber)">${data.warning}</div>` : ""}
         </div>
       `;
@@ -979,8 +1020,8 @@ async function seedDatabase() {
     }
   } catch (err) {
     result.style.display = "block";
-    result.className     = "seed-result error";
-    result.innerHTML     = `<div class="seed-result-title">✗ Error</div><div style="font-size:13px;color:var(--text-secondary)">${err.message}</div>`;
+    result.className = "seed-result error";
+    result.innerHTML = `<div class="seed-result-title">✗ Error</div><div style="font-size:13px;color:var(--text-secondary)">${err.message}</div>`;
   } finally {
     setLoading(btn, false);
   }
@@ -989,8 +1030,8 @@ async function seedDatabase() {
 /* ── Download helper ──────────────────────────────────────────────────── */
 function triggerDownload(blob, filename) {
   const url = URL.createObjectURL(blob);
-  const a   = document.createElement("a");
-  a.href    = url;
+  const a = document.createElement("a");
+  a.href = url;
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
